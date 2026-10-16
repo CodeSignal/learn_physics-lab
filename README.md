@@ -8,15 +8,13 @@ graph configured for that experiment.
 The application uses Vite, vanilla JavaScript modules, Canvas 2D, Rapier 2D,
 and Chart.js. It does not require a backend for the simulation itself.
 
-## Included experiments
+## Starter repository
 
-- Horizontal applied force
-- Block on an inclined plane
-- Two-body collision lab
-- Projectile launch
-
-While authoring, the experiment picker is visible. A production practice loads
-one selected experiment only, with no learner-facing picker.
+This repository intentionally includes no learner-facing experiments. Create
+and register each experiment separately; the app starts in a clear empty state
+until one is configured. While authoring, the experiment picker can be made
+visible. A production practice loads one selected experiment only, with no
+learner-facing picker.
 
 ## Run locally
 
@@ -82,7 +80,7 @@ Set the scene ID in `client/lab-settings.js` and hide the picker:
 
 ```js
 export const labSettings = Object.freeze({
-  experimentId: 'projectile-launch',
+  experimentId: 'my-experiment',
   showExperimentPicker: false,
 });
 ```

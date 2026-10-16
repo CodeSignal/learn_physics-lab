@@ -1,6 +1,3 @@
-import horizontalForce from './experiments/horizontal-force.json';
-import inclinedPlane from './experiments/inclined-plane.json';
-import collisionLab from './experiments/collision-lab.json';
-import projectileLaunch from './experiments/projectile-launch.json';
-
-export const SCENES = Object.freeze([horizontalForce, inclinedPlane, collisionLab, projectileLaunch]);
+// Import experiment JSON files here as they are created. The starter repository
+// intentionally contains no learner-facing experiments.
+export const SCENES = Object.freeze([]);

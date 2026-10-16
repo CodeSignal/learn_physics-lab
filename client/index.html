@@ -49,6 +49,10 @@
       </div>
       <div class="simulation-card">
         <canvas id="simulation-canvas" aria-label="Interactive physics simulation"></canvas>
+        <div id="empty-state" class="empty-state" hidden>
+          <h2>Ready for your first experiment</h2>
+          <p>Create a scene configuration, register it in <code>client/scenes.js</code>, and select it in <code>client/lab-settings.js</code>.</p>
+        </div>
       </div>
       <div class="transport" aria-label="Simulation controls">
         <button id="run-button" class="button button-primary">Run simulation</button>
@@ -57,7 +61,7 @@
         <button id="center-view-button" class="button button-text">⌖ Center view</button>
         <div class="time-display"><span>ELAPSED TIME</span><strong id="time-display">0.00 s</strong></div>
       </div>
-      <div class="lower-grid">
+      <div id="lower-panels" class="lower-grid">
         <section class="measurements-card box card">
           <div class="card-heading"><h2>Live measurements</h2><span class="live-label"><i></i> LIVE</span></div>
           <div id="measurement-grid" class="measurements"></div>

@@ -1,6 +1,7 @@
-// The experiment learners see by default. Change this id when publishing a practice.
+// Select an experiment ID after adding one to scenes.js. Leave null for the
+// intentionally empty starter state.
 export const labSettings = Object.freeze({
-  experimentId: 'horizontal-force',
+  experimentId: null,
   // Keep true while authoring or testing several scenes. Set false for a learner-facing practice.
   showExperimentPicker: true,
 });

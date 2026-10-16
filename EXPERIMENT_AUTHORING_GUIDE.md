@@ -31,10 +31,6 @@ For example:
 import myExperiment from './experiments/my-experiment.json';
 
 export const SCENES = Object.freeze([
-  horizontalForce,
-  inclinedPlane,
-  collisionLab,
-  projectileLaunch,
   myExperiment,
 ]);
 ```
@@ -328,7 +324,7 @@ Supported graph `type` values are `line`, `bar`, and `scatter`. Line graphs are 
 
 ## A complete projectile example
 
-See `client/experiments/projectile-launch.json` for a working example with an impulse, magnitude and angle controls, a trail, velocity vector, history recording, values, and a graph. The other included scenes show a constant force, an inclined plane, and a collision.
+Use the starter configuration above as the basis for an experiment with an impulse, magnitude and angle controls, a trail, velocity vector, history recording, values, and a graph.
 
 ## Troubleshooting checklist
 
