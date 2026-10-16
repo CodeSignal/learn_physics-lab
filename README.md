@@ -97,10 +97,9 @@ learner controls, measurements, trails, vectors, and graph configuration.
 
 At a high level:
 
-1. Add `client/experiments/my-experiment.json`.
-2. Import and add it to `SCENES` in `client/scenes.js`.
-3. Set its `id` as `experimentId` in `client/lab-settings.js`.
-4. Test it in the browser, then run `npm test` and `npm run build`.
+1. Add `client/experiments/my-experiment.json`. It is discovered automatically.
+2. Set its `id` as `experimentId` in `client/lab-settings.js`.
+3. Test it in the browser, then run `npm test` and `npm run build`.
 
 World values use SI units: metres, seconds, kilograms, newtons, joules, and
 radians. Positive X points right and positive Y points up. Dynamic bodies are
