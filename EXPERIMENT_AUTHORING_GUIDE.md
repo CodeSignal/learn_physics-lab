@@ -20,22 +20,13 @@ npm test
 npm run build
 ```
 
-## The two files you change
+## The experiment file you change
 
-1. Create `client/experiments/my-experiment.json`.
-2. Import it and add it to `SCENES` in `client/scenes.js`.
-
-For example:
-
-```js
-import myExperiment from './experiments/my-experiment.json';
-
-export const SCENES = Object.freeze([
-  myExperiment,
-]);
-```
-
-The order in `SCENES` is the order in the Experiment menu.
+Create `client/experiments/my-experiment.json`. Vite automatically discovers
+every `.json` file in that folder when the application starts or builds, so you
+never need to edit `client/scenes.js` for an ordinary experiment. In testing
+mode, the experiment picker lists discovered files in alphabetical filename
+order.
 
 ## Choose the learner-facing experiment
 
