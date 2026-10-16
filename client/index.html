@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Physics Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./design-system/colors/colors.css">
+  <link rel="stylesheet" href="./design-system/spacing/spacing.css">
+  <link rel="stylesheet" href="./design-system/typography/typography.css">
+  <link rel="stylesheet" href="./design-system/components/button/button.css">
+  <link rel="stylesheet" href="./design-system/components/boxes/boxes.css">
+  <link rel="stylesheet" href="./design-system/components/input/input.css">
+  <link rel="stylesheet" href="./design-system/components/dropdown/dropdown.css">
+  <link rel="stylesheet" href="./design-system/components/tags/tags.css">
+  <link rel="stylesheet" href="./design-system/components/modal/modal.css">
+  <link rel="stylesheet" href="./bespoke-template.css">
+  <link rel="stylesheet" href="./physics-lab.css">
+  <link rel="stylesheet" href="./instrumentation.css">
+  <style>.graph-canvas{height:240px;margin-top:14px}.graph-canvas canvas{height:100%!important;width:100%!important}</style>
+</head>
+<body class="bespoke">
+  <header class="header">
+    <div class="brand-mark">∿</div>
+    <h1 class="heading-small">Physics Lab</h1>
+    <span class="header-context">Interactive simulations</span>
+    <div class="spacer"></div>
+    <button id="btn-help" class="button button-text">How it works</button>
+  </header>
+  <main class="lab-shell">
+    <aside class="control-panel" aria-label="Experiment settings">
+      <div class="scene-picker">
+        <div class="panel-eyebrow">Testing only</div>
+        <label class="select-label" for="scene-select">Experiment</label>
+        <select id="scene-select" class="input" aria-label="Choose an experiment"></select>
+      </div>
+      <div class="section-rule"></div>
+      <div class="panel-heading-row"><h2>Parameters</h2><span class="tag">Configurable</span></div>
+      <p id="scene-description" class="experiment-description"></p>
+      <div id="parameter-controls"></div>
+      <div class="locked-note"><span>⌁</span> Only parameters selected in this scene configuration can be changed.</div>
+    </aside>
+    <section class="workspace" aria-label="Physics simulation">
+      <div class="workspace-topbar">
+        <div><div id="scene-title" class="workspace-title"></div><div id="scene-subtitle" class="workspace-subtitle"></div></div>
+        <div id="status-pill" class="status-pill"><span id="status-dot"></span><span id="status-label">Ready</span></div>
+      </div>
+      <div class="simulation-card">
+        <canvas id="simulation-canvas" aria-label="Interactive physics simulation"></canvas>
+      </div>
+      <div class="transport" aria-label="Simulation controls">
+        <button id="run-button" class="button button-primary">Run simulation</button>
+        <button id="pause-button" class="button button-secondary" disabled>Pause</button>
+        <button id="reset-button" class="button button-text">↺ Reset</button>
+        <button id="center-view-button" class="button button-text">⌖ Center view</button>
+        <div class="time-display"><span>ELAPSED TIME</span><strong id="time-display">0.00 s</strong></div>
+      </div>
+      <div class="lower-grid">
+        <section class="measurements-card box card">
+          <div class="card-heading"><h2>Live measurements</h2><span class="live-label"><i></i> LIVE</span></div>
+          <div id="measurement-grid" class="measurements"></div>
+        </section>
+        <section id="graphs-panel" class="graphs-card box card" aria-label="Measurement graph">
+          <div class="card-heading"><h2 id="graph-title">Measurement graph</h2></div>
+          <div id="graph-canvas" class="graph-canvas"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

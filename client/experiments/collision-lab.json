@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1, "id": "collision-lab", "title": "3 · Collision lab",
+  "description": "Give the left block an initial push and compare momentum transfer and bounce as mass and restitution change.",
+  "concepts": ["Two-body collision", "Restitution controls bounce", "Shared collision system"],
+  "environment": { "gravity": { "x": 0, "y": -9.81 }, "duration": 20, "timestep": 0.016666666666666666, "bounds": { "left": -8, "right": 8, "bottom": -4, "top": 5 } },
+  "objects": [
+    { "id": "floor", "label": "Floor", "shape": "platform", "bodyType": "fixed", "position": { "x": 0, "y": -0.85 }, "width": 16, "height": 0.45, "friction": 0.8, "render": { "color": "#56627c" } },
+    { "id": "slider-a", "label": "Blue block", "shape": "rectangle", "bodyType": "dynamic", "position": { "x": -4.6, "y": 0 }, "width": 1, "height": 1, "mass": 2, "friction": 0.12, "restitution": 0.65, "initialVelocity": { "x": 5, "y": 0 }, "render": { "color": "#377dff" } },
+    { "id": "slider-b", "label": "Purple block", "shape": "rectangle", "bodyType": "dynamic", "position": { "x": 0.3, "y": 0 }, "width": 1.25, "height": 1.25, "mass": 5, "friction": 0.12, "restitution": 0.65, "render": { "color": "#7265d6" } }
+  ],
+  "forces": [],
+  "learnerControls": [
+    { "id": "mass-b", "label": "Purple block mass", "targetType": "object", "targetId": "slider-b", "property": "mass", "min": 1, "max": 15, "step": 0.5, "unit": "kg", "value": 5 },
+    { "id": "velocity-a", "label": "Blue launch speed", "targetType": "object", "targetId": "slider-a", "property": "initialVelocityX", "min": 0, "max": 10, "step": 0.5, "unit": "m/s", "value": 5 },
+    { "id": "bounce", "label": "Restitution", "targetType": "objects", "targetId": "slider-a,slider-b", "property": "restitution", "min": 0, "max": 1, "step": 0.05, "unit": "e", "value": 0.65 }
+  ],
+  "measurements": [
+    { "objectId": "slider-a", "property": "speed", "label": "Blue speed", "unit": "m/s" },
+    { "objectId": "slider-b", "property": "speed", "label": "Purple speed", "unit": "m/s" },
+    { "objectId": "slider-b", "property": "mass", "label": "Purple mass", "unit": "kg" },
+    { "objectId": "slider-b", "property": "velocityX", "label": "Purple X velocity", "unit": "m/s" }
+  ],
+  "instrumentation": { "recording": { "enabled": true, "sampleInterval": 0.033333333, "maxSamples": 1200 }, "measurements": [{ "id": "a-vx", "target": "slider-a", "quantity": "velocity.x", "label": "Blue velocity X", "display": "both" }, { "id": "b-vx", "target": "slider-b", "quantity": "velocity.x", "label": "Purple velocity X", "display": "both" }, { "id": "a-p", "target": "slider-a", "quantity": "momentum", "label": "Blue momentum", "display": "value" }, { "id": "b-p", "target": "slider-b", "quantity": "momentum", "label": "Purple momentum", "display": "value" }, { "id": "a-ke", "target": "slider-a", "quantity": "totalKineticEnergy", "label": "Blue kinetic energy", "display": "value" }, { "id": "b-ke", "target": "slider-b", "quantity": "totalKineticEnergy", "label": "Purple kinetic energy", "display": "value" }], "graph": { "id": "collision-velocity", "type": "line", "title": "Velocity vs. time", "series": ["a-vx", "b-vx"], "yAxis": "Velocity (m/s)" } }
+}

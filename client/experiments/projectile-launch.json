@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "projectile-launch",
+  "title": "4 · Projectile launch",
+  "description": "Launch a ball at an angle and compare how the launch impulse and angle change its flight.",
+  "concepts": ["Projectile motion", "Horizontal and vertical velocity components", "Gravity creates a parabolic path"],
+  "environment": { "gravity": { "x": 0, "y": -9.81 }, "duration": 8, "timestep": 0.016666666666666666, "bounds": { "left": -1.6, "right": 18.4, "bottom": -1.45, "top": 12.55 } },
+  "objects": [
+    { "id": "ground", "label": "Ground", "shape": "platform", "bodyType": "fixed", "position": { "x": 8.4, "y": -1.05 }, "width": 22, "height": 0.4, "friction": 0.7, "render": { "color": "#56627c" } },
+    { "id": "ball", "label": "Launch ball", "shape": "circle", "bodyType": "dynamic", "position": { "x": 0, "y": 0 }, "radius": 0.45, "mass": 1, "friction": 0.2, "restitution": 0.35, "linearDamping": 0.01, "render": { "color": "#a33ad8" } },
+    { "id": "target", "label": "Target", "shape": "rectangle", "bodyType": "fixed", "position": { "x": 12.4, "y": 0.2 }, "width": 0.35, "height": 2.1, "friction": 0.4, "render": { "color": "#f99300" } }
+  ],
+  "forces": [{ "id": "launch", "target": "ball", "type": "impulse", "vector": { "x": 9.19, "y": 7.71 }, "continuous": false }],
+  "learnerControls": [
+    { "id": "launch-force", "label": "Launch impulse", "targetType": "force", "targetId": "launch", "property": "magnitude", "min": 3, "max": 18, "step": 1, "unit": "N·s", "value": 12 },
+    { "id": "launch-angle", "label": "Launch angle", "targetType": "force", "targetId": "launch", "property": "angle", "min": 15, "max": 75, "step": 1, "unit": "°", "value": 40 },
+    { "id": "gravity", "label": "Gravity", "targetType": "environment", "property": "gravityMagnitude", "min": 1, "max": 20, "step": 0.1, "unit": "m/s²", "value": 9.8 }
+  ],
+  "measurements": [
+    { "objectId": "ball", "property": "x", "label": "Horizontal position", "unit": "m" },
+    { "objectId": "ball", "property": "y", "label": "Height", "unit": "m" },
+    { "objectId": "ball", "property": "velocityX", "label": "Horizontal velocity", "unit": "m/s" },
+    { "objectId": "ball", "property": "velocityY", "label": "Vertical velocity", "unit": "m/s" }
+  ],
+  "instrumentation": { "recording": { "enabled": true, "sampleInterval": 0.016666667, "maxSamples": 1000 }, "measurements": [{ "id": "ball-height", "target": "ball", "quantity": "position.y", "label": "Height", "display": "both" }, { "id": "ball-vx", "target": "ball", "quantity": "velocity.x", "label": "Horizontal velocity", "display": "both" }, { "id": "ball-vy", "target": "ball", "quantity": "velocity.y", "label": "Vertical velocity", "display": "both" }, { "id": "ball-speed", "target": "ball", "quantity": "speed", "label": "Speed", "display": "value" }], "trails": [{ "target": "ball", "enabled": true, "color": "#a33ad8", "sampleInterval": 0.016666667, "maxPoints": 500, "fade": true }], "vectors": [{ "target": "ball", "quantity": "velocity", "enabled": true, "color": "#0b8f72" }], "graph": { "id": "velocity", "type": "line", "title": "Velocity vs. time", "series": ["ball-vx", "ball-vy"], "yAxis": "Velocity (m/s)" } }
+}

@@ -1,0 +1,56 @@
+/* Live values update in place; tabular figures prevent width changes between digits. */
+.measurements article strong {
+  display: block;
+  min-width: 9ch;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Give changing measurements more room while keeping the graph compact. */
+.lower-grid {
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.35fr);
+}
+
+/* Design System boxes are flex rows by default; these cards need vertical content. */
+.lower-grid > .card {
+  display: block;
+  min-width: 0;
+}
+
+.workspace { container-type: inline-size; }
+
+@container (max-width: 760px) {
+  .lower-grid { grid-template-columns: 1fr; }
+}
+
+/* The drawing surface always follows its card, rather than a hard-coded height. */
+.simulation-card {
+  height: clamp(220px, min(42vw, 48vh), 420px);
+}
+
+.parameter-value {
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+
+.parameter-value:focus-visible {
+  outline: 2px solid var(--Colors-Input-Border-Focus);
+  outline-offset: 2px;
+  border-radius: var(--UI-Radius-radius-xs);
+}
+
+/* Uses the Design System input component while a parameter is being edited. */
+.parameter-value-input.input {
+  display: inline-block;
+  width: 72px;
+  height: var(--UI-Input-xs);
+  padding: var(--UI-Spacing-spacing-none) var(--UI-Spacing-spacing-s);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.parameter-value-input[hidden] { display: none; }
+
+@media (max-width: 800px) {
+  .lower-grid { grid-template-columns: 1fr; }
+}

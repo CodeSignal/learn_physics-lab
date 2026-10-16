@@ -1,0 +1,34 @@
+{
+  "name": "bespoke-template",
+  "version": "0.0.2",
+  "description": "Bespoke template with local development server and WebSocket messaging",
+  "main": "server.js",
+  "scripts": {
+    "start": "npm run start:prod",
+    "start:prod": "IS_PRODUCTION=true node server.js",
+    "start:dev": "concurrently \"npm run dev:vite\" \"npm run dev:api\"",
+    "dev:vite": "vite",
+    "dev:api": "PORT=3001 node server.js",
+    "build": "vite build",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "bespoke",
+    "template",
+    "development",
+    "server",
+    "websocket"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@dimforge/rapier2d-compat": "^0.21.0",
+    "chart.js": "^4.5.1",
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "vite": "^7.2.4",
+    "vitest": "^5.0.4"
+  }
+}
