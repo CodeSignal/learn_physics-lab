@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { validateScene } from './config-validator.js';
-import { SCENES } from './scenes.js';
 
 const baseScene = () => ({
   schemaVersion: 1, id: 'test', title: 'Test',
@@ -9,7 +8,11 @@ const baseScene = () => ({
 });
 
 describe('scene configuration', () => {
-  it('accepts all supplied mechanics scenes', () => SCENES.forEach(scene => expect(validateScene(scene)).toBe(scene)));
+  it('accepts a valid scene', () => {
+    const scene = baseScene();
+    scene.objects = [{ id: 'present', shape: 'rectangle', bodyType: 'fixed', position: { x: 0, y: 0 }, width: 1, height: 1 }];
+    expect(validateScene(scene)).toBe(scene);
+  });
   it('rejects forces with missing targets', () => {
     const scene = baseScene(); scene.objects = [{ id: 'present', shape: 'rectangle', bodyType: 'fixed', position: { x: 0, y: 0 }, width: 1, height: 1 }]; scene.forces = [{ id: 'push', target: 'none', type: 'constant-force', vector: { x: 1, y: 0 } }];
     expect(() => validateScene(scene)).toThrow('unknown force target');

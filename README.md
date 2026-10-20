@@ -10,11 +10,10 @@ and Chart.js. It does not require a backend for the simulation itself.
 
 ## Starter repository
 
-This repository intentionally includes no learner-facing experiments. Create
-and register each experiment separately; the app starts in a clear empty state
-until one is configured. While authoring, the experiment picker can be made
-visible. A production practice loads one selected experiment only, with no
-learner-facing picker.
+This repository intentionally includes no learner-facing experiments. Every
+release contains an editable `dist/physics-lab.settings.json` file and a
+`dist/experiments/` folder. Create an experiment there after extracting the
+release; no rebuild is required.
 
 ## Run locally
 
@@ -58,15 +57,15 @@ Experiment JSON
   -> Canvas renderer + controls + instrumentation + chart
 ```
 
-All experiment definitions live in `client/experiments/`. The shared runtime
-means an ordinary new experiment is authored as configuration, rather than as
-a new UI or JavaScript implementation.
+In a release, experiment definitions live in `dist/experiments/` and are
+loaded over HTTP when the application starts. The shared runtime means an
+ordinary new experiment is authored as configuration, rather than as a new UI
+or JavaScript implementation.
 
 | Location | Responsibility |
 | --- | --- |
-| `client/lab-settings.js` | Selects the production experiment and whether the authoring picker is visible. |
-| `client/scenes.js` | Imports the available experiment JSON files. |
-| `client/experiments/*.json` | Experiment physics, objects, learner controls, measurements, trails, vectors, and graph settings. |
+| `client/public/physics-lab.settings.json` | Runtime settings template copied to `dist/` during a build. |
+| `client/public/experiments/` | Runtime experiment folder copied to `dist/experiments/` during a build. |
 | `client/config-validator.js` | Validates scene configuration before it is used. |
 | `client/scene-builder.js` | Converts scene objects into Rapier bodies and colliders. |
 | `client/simulation-runtime.js` | Runs the fixed-step physics loop, controls forces and reset behavior, and exposes state. |
@@ -76,17 +75,19 @@ a new UI or JavaScript implementation.
 
 ## Configure a learner-facing practice
 
-Set the scene ID in `client/lab-settings.js` and hide the picker:
+Set the scene path and ID in `dist/physics-lab.settings.json` and hide the picker:
 
-```js
-export const labSettings = Object.freeze({
-  experimentId: 'my-experiment',
-  showExperimentPicker: false,
-});
+```json
+{
+  "experimentPath": "./experiments/my-experiment.json",
+  "experimentId": "my-experiment",
+  "showExperimentPicker": false
+}
 ```
 
-The ID must match an experiment registered in `client/scenes.js`. Keeping
-`showExperimentPicker: true` is useful when testing multiple experiments.
+The ID must match the `id` inside that JSON experiment. To test several
+experiments, use an `experimentPaths` array and set `showExperimentPicker` to
+`true`.
 
 ## Add an experiment
 
@@ -97,9 +98,25 @@ learner controls, measurements, trails, vectors, and graph configuration.
 
 At a high level:
 
-1. Add `client/experiments/my-experiment.json`. It is discovered automatically.
-2. Set its `id` as `experimentId` in `client/lab-settings.js`.
-3. Test it in the browser, then run `npm test` and `npm run build`.
+1. For local development, add `client/public/experiments/my-experiment.json`.
+2. Set its path and ID in `client/public/physics-lab.settings.json`.
+3. For an extracted release, add the same JSON to `dist/experiments/` and edit
+   `dist/physics-lab.settings.json` instead.
+4. Test it in the browser, then run `npm test` and `npm run build` when working from source.
+
+## Run an extracted release
+
+After extracting `release.tar.gz`, work from the release root, not from its
+`dist/` folder:
+
+```bash
+cd bespoke-simulation
+npm run start:prod
+```
+
+Then add an experiment JSON file to `dist/experiments/` and point
+`dist/physics-lab.settings.json` at it. The production server already serves
+JSON files from `dist/`.
 
 World values use SI units: metres, seconds, kilograms, newtons, joules, and
 radians. Positive X points right and positive Y points up. Dynamic bodies are
