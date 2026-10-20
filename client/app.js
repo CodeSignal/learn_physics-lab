@@ -5,7 +5,7 @@ import { GraphManager } from './instrumentation/graph-manager.js';
 import { validateScene } from './config-validator.js';
 
 const $ = (selector) => document.querySelector(selector);
-const SETTINGS_PATH = './physics-lab.settings.json';
+const SETTINGS_URL = new URL('/runtime-config/physics-lab.settings.json', window.location.origin);
 
 let runtime;
 let renderer;
@@ -34,7 +34,7 @@ async function fetchJson(path, label) {
 
 function normalizeSettings(settings) {
   if (!settings || typeof settings !== 'object' || Array.isArray(settings)) {
-    throw new Error(`${SETTINGS_PATH} must contain a JSON object.`);
+    throw new Error('physics-lab.settings.json must contain a JSON object.');
   }
 
   if (settings.experimentPaths != null && !Array.isArray(settings.experimentPaths)) {
@@ -57,13 +57,14 @@ function normalizeSettings(settings) {
 }
 
 async function loadRuntimeConfiguration() {
-  const settings = normalizeSettings(await fetchJson(SETTINGS_PATH, 'Physics Lab settings'));
+  const settings = normalizeSettings(await fetchJson(SETTINGS_URL, 'Physics Lab settings'));
   const loadedScenes = await Promise.all(settings.experimentPaths.map(async (path) => {
-    const scene = await fetchJson(path, 'experiment configuration');
+    const experimentUrl = new URL(path, SETTINGS_URL);
+    const scene = await fetchJson(experimentUrl, 'experiment configuration');
     try {
       return validateScene(scene);
     } catch (error) {
-      throw new Error(`Invalid experiment at ${path}: ${error.message}`);
+      throw new Error(`Invalid experiment at ${experimentUrl.pathname}: ${error.message}`);
     }
   }));
 
@@ -232,7 +233,7 @@ async function init() {
   });
 
   if (scenes.length === 0) {
-    showEmptyState('No experiment configured', 'Add an experiment JSON file to dist/experiments and reference it from dist/physics-lab.settings.json.');
+    showEmptyState('No experiment configured', 'Add an experiment JSON file to runtime-config/experiments and reference it from runtime-config/physics-lab.settings.json.');
     return;
   }
 

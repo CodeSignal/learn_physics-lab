@@ -11,9 +11,10 @@ and Chart.js. It does not require a backend for the simulation itself.
 ## Starter repository
 
 This repository intentionally includes no learner-facing experiments. Every
-release contains an editable `dist/physics-lab.settings.json` file and a
-`dist/experiments/` folder. Create an experiment there after extracting the
-release; no rebuild is required.
+release contains a `runtime-config.example/` template. On its first start, the
+server copies it to a user-owned `runtime-config/` folder. Create experiments
+there after extracting the release; later release updates do not overwrite that
+folder.
 
 ## Run locally
 
@@ -57,15 +58,15 @@ Experiment JSON
   -> Canvas renderer + controls + instrumentation + chart
 ```
 
-In a release, experiment definitions live in `dist/experiments/` and are
-loaded over HTTP when the application starts. The shared runtime means an
+In a release, experiment definitions live in `runtime-config/experiments/` and
+are loaded over HTTP when the application starts. The shared runtime means an
 ordinary new experiment is authored as configuration, rather than as a new UI
 or JavaScript implementation.
 
 | Location | Responsibility |
 | --- | --- |
-| `client/public/physics-lab.settings.json` | Runtime settings template copied to `dist/` during a build. |
-| `client/public/experiments/` | Runtime experiment folder copied to `dist/experiments/` during a build. |
+| `runtime-config.example/` | Versioned template copied once into user-owned runtime configuration. |
+| `runtime-config/` | Ignored, user-owned settings and experiment JSON files. Never included in a release archive. |
 | `client/config-validator.js` | Validates scene configuration before it is used. |
 | `client/scene-builder.js` | Converts scene objects into Rapier bodies and colliders. |
 | `client/simulation-runtime.js` | Runs the fixed-step physics loop, controls forces and reset behavior, and exposes state. |
@@ -75,7 +76,7 @@ or JavaScript implementation.
 
 ## Configure a learner-facing practice
 
-Set the scene path and ID in `dist/physics-lab.settings.json` and hide the picker:
+Set the scene path and ID in `runtime-config/physics-lab.settings.json` and hide the picker:
 
 ```json
 {
@@ -98,10 +99,9 @@ learner controls, measurements, trails, vectors, and graph configuration.
 
 At a high level:
 
-1. For local development, add `client/public/experiments/my-experiment.json`.
-2. Set its path and ID in `client/public/physics-lab.settings.json`.
-3. For an extracted release, add the same JSON to `dist/experiments/` and edit
-   `dist/physics-lab.settings.json` instead.
+1. Copy `runtime-config.example/` to `runtime-config/` if it does not already exist.
+2. Add `runtime-config/experiments/my-experiment.json`.
+3. Set its path and ID in `runtime-config/physics-lab.settings.json`.
 4. Test it in the browser, then run `npm test` and `npm run build` when working from source.
 
 ## Run an extracted release
@@ -114,9 +114,10 @@ cd bespoke-simulation
 npm run start:prod
 ```
 
-Then add an experiment JSON file to `dist/experiments/` and point
-`dist/physics-lab.settings.json` at it. The production server already serves
-JSON files from `dist/`.
+On first start, the server creates `runtime-config/` from the included template.
+Then add an experiment JSON file to `runtime-config/experiments/` and point
+`runtime-config/physics-lab.settings.json` at it. The production server serves
+that folder at `/runtime-config/`.
 
 World values use SI units: metres, seconds, kilograms, newtons, joules, and
 radians. Positive X points right and positive Y points up. Dynamic bodies are

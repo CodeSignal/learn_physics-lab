@@ -1,4 +1,5 @@
-Add experiment JSON files to this folder after extracting a Physics Lab release.
+Add experiment JSON files to this folder. This directory is user-owned and is
+not replaced when a new Physics Lab release is extracted.
 
 Then edit ../physics-lab.settings.json. For one learner-facing experiment:
 

@@ -34,10 +34,9 @@ This template provides:
    The development server runs on `http://localhost:3000`.
 
 4. **Configure an experiment**:
-   - During source development, add JSON files to `client/public/experiments/`
-     and select them in `client/public/physics-lab.settings.json`.
-   - In an extracted release, use `dist/experiments/` and
-     `dist/physics-lab.settings.json` instead. Do not modify compiled assets.
+   - Copy `runtime-config.example/` to the ignored `runtime-config/` folder.
+   - Add JSON files to `runtime-config/experiments/` and select them in
+     `runtime-config/physics-lab.settings.json`. Do not modify compiled assets.
 
 ## Key Conventions
 

@@ -16,11 +16,25 @@ try {
 }
 
 const DIST_DIR = path.join(__dirname, 'dist');
+const RUNTIME_CONFIG_DIR = process.env.PHYSICS_LAB_CONFIG_DIR
+  ? path.resolve(process.env.PHYSICS_LAB_CONFIG_DIR)
+  : path.join(__dirname, 'runtime-config');
+const RUNTIME_CONFIG_EXAMPLE_DIR = path.join(__dirname, 'runtime-config.example');
 // Check if IS_PRODUCTION is set to true
 const isProduction = process.env.IS_PRODUCTION === 'true';
 // In production mode, dist directory must exist
 if (isProduction && !fs.existsSync(DIST_DIR)) {
   throw new Error(`Production mode enabled but dist directory does not exist: ${DIST_DIR}`);
+}
+
+// A release includes only the example configuration. Copy it once on first
+// start so later release extractions never overwrite practice-owned files.
+if (!fs.existsSync(RUNTIME_CONFIG_DIR)) {
+  if (!fs.existsSync(RUNTIME_CONFIG_EXAMPLE_DIR)) {
+    throw new Error(`Runtime configuration is missing and no template exists: ${RUNTIME_CONFIG_EXAMPLE_DIR}`);
+  }
+  fs.cpSync(RUNTIME_CONFIG_EXAMPLE_DIR, RUNTIME_CONFIG_DIR, { recursive: true });
+  console.log(`Created runtime configuration at ${RUNTIME_CONFIG_DIR}`);
 }
 // Force port 3000 in production, otherwise use PORT environment variable or default to 3000
 const PORT = isProduction ? 3000 : (process.env.PORT || 3000);
@@ -65,6 +79,13 @@ function serveFile(filePath, res) {
     res.writeHead(200, { 'Content-Type': mimeType });
     res.end(data);
   });
+}
+
+function safeFilePath(directory, requestPath) {
+  const root = path.resolve(directory);
+  const filePath = path.resolve(root, `.${requestPath}`);
+  const relative = path.relative(root, filePath);
+  return relative.startsWith('..') || path.isAbsolute(relative) ? null : filePath;
 }
 
 // Handle POST requests
@@ -126,6 +147,18 @@ const server = http.createServer((req, res) => {
   // Handle POST requests
   if (req.method === 'POST') {
     handlePostRequest(req, res, parsedUrl);
+    return;
+  }
+
+  if (pathName === '/runtime-config' || pathName.startsWith('/runtime-config/')) {
+    const configPath = pathName.slice('/runtime-config'.length) || '/';
+    const filePath = safeFilePath(RUNTIME_CONFIG_DIR, configPath);
+    if (!filePath) {
+      res.writeHead(403, { 'Content-Type': 'text/plain' });
+      res.end('Forbidden');
+      return;
+    }
+    serveFile(filePath, res);
     return;
   }
 
