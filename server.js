@@ -18,8 +18,7 @@ try {
 const DIST_DIR = path.join(__dirname, 'dist');
 const RUNTIME_CONFIG_DIR = process.env.PHYSICS_LAB_CONFIG_DIR
   ? path.resolve(process.env.PHYSICS_LAB_CONFIG_DIR)
-  : path.join(__dirname, 'runtime-config');
-const RUNTIME_CONFIG_EXAMPLE_DIR = path.join(__dirname, 'runtime-config.example');
+  : path.resolve(__dirname, '..');
 // Check if IS_PRODUCTION is set to true
 const isProduction = process.env.IS_PRODUCTION === 'true';
 // In production mode, dist directory must exist
@@ -27,15 +26,6 @@ if (isProduction && !fs.existsSync(DIST_DIR)) {
   throw new Error(`Production mode enabled but dist directory does not exist: ${DIST_DIR}`);
 }
 
-// A release includes only the example configuration. Copy it once on first
-// start so later release extractions never overwrite practice-owned files.
-if (!fs.existsSync(RUNTIME_CONFIG_DIR)) {
-  if (!fs.existsSync(RUNTIME_CONFIG_EXAMPLE_DIR)) {
-    throw new Error(`Runtime configuration is missing and no template exists: ${RUNTIME_CONFIG_EXAMPLE_DIR}`);
-  }
-  fs.cpSync(RUNTIME_CONFIG_EXAMPLE_DIR, RUNTIME_CONFIG_DIR, { recursive: true });
-  console.log(`Created runtime configuration at ${RUNTIME_CONFIG_DIR}`);
-}
 // Force port 3000 in production, otherwise use PORT environment variable or default to 3000
 const PORT = isProduction ? 3000 : (process.env.PORT || 3000);
 
@@ -86,6 +76,10 @@ function safeFilePath(directory, requestPath) {
   const filePath = path.resolve(root, `.${requestPath}`);
   const relative = path.relative(root, filePath);
   return relative.startsWith('..') || path.isAbsolute(relative) ? null : filePath;
+}
+
+function isRuntimeConfigurationRequest(requestPath) {
+  return requestPath === '/physics-lab.settings.json' || requestPath.startsWith('/experiments/');
 }
 
 // Handle POST requests
@@ -152,6 +146,11 @@ const server = http.createServer((req, res) => {
 
   if (pathName === '/runtime-config' || pathName.startsWith('/runtime-config/')) {
     const configPath = pathName.slice('/runtime-config'.length) || '/';
+    if (!isRuntimeConfigurationRequest(configPath)) {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('Runtime configuration file not found');
+      return;
+    }
     const filePath = safeFilePath(RUNTIME_CONFIG_DIR, configPath);
     if (!filePath) {
       res.writeHead(403, { 'Content-Type': 'text/plain' });
@@ -226,6 +225,7 @@ server.listen(PORT, () => {
   } else {
     console.log(`WebSocket functionality disabled - install 'ws' package to enable`);
   }
+  console.log(`Runtime configuration directory: ${RUNTIME_CONFIG_DIR}`);
   console.log('Press Ctrl+C to stop the server');
 });
 

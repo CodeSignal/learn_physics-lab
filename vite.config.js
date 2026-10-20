@@ -4,17 +4,26 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const projectDir = path.dirname(fileURLToPath(import.meta.url));
-const runtimeConfigDir = path.join(projectDir, 'runtime-config');
-const runtimeConfigExampleDir = path.join(projectDir, 'runtime-config.example');
+const runtimeConfigDir = process.env.PHYSICS_LAB_CONFIG_DIR
+  ? path.resolve(process.env.PHYSICS_LAB_CONFIG_DIR)
+  : path.resolve(projectDir, '..');
+
+function isRuntimeConfigurationRequest(requestPath) {
+  return requestPath === '/physics-lab.settings.json' || requestPath.startsWith('/experiments/');
+}
 
 function runtimeConfigPlugin() {
   return {
     name: 'physics-lab-runtime-config',
     configureServer(server) {
       server.middlewares.use('/runtime-config', (request, response) => {
-        const configDir = fs.existsSync(runtimeConfigDir) ? runtimeConfigDir : runtimeConfigExampleDir;
         const requestPath = new URL(request.url || '/', 'http://localhost').pathname;
-        const root = path.resolve(configDir);
+        if (!isRuntimeConfigurationRequest(requestPath)) {
+          response.statusCode = 404;
+          response.end('Runtime configuration file not found');
+          return;
+        }
+        const root = path.resolve(runtimeConfigDir);
         const filePath = path.resolve(root, `.${requestPath}`);
         const relative = path.relative(root, filePath);
         if (relative.startsWith('..') || path.isAbsolute(relative)) {

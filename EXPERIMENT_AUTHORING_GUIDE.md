@@ -22,16 +22,16 @@ npm run build
 
 ## Where experiment files live
 
-For source development or an extracted release, create
-`runtime-config/experiments/my-experiment.json`. If `runtime-config/` does not
-exist yet, copy `runtime-config.example/` to `runtime-config/`. The production
-server performs that copy automatically on its first start. Physics Lab loads
+For an extracted release, create `../experiments/my-experiment.json`, where
+`experiments/` is a sibling of the `bespoke-simulation/` release directory.
+Place `physics-lab.settings.json` in that same parent folder. Physics Lab only
+reads these practice-owned files; it never creates or updates them. It loads
 the configured JSON at startup, so no JavaScript rebuild is needed after
 editing a release.
 
 ## Choose the learner-facing experiment
 
-`runtime-config/physics-lab.settings.json` is the application-level settings
+`../physics-lab.settings.json` is the application-level settings
 file. It selects the one experiment shown to learners:
 
 ```json
@@ -59,7 +59,7 @@ To offer multiple authored experiments during testing, use `experimentPaths`:
 
 ## Copyable starter experiment
 
-Copy this into `runtime-config/experiments/my-experiment.json`, then change the
+Copy this into `../experiments/my-experiment.json`, then change the
 names, positions, and values to create your experiment.
 
 ```json

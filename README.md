@@ -10,11 +10,10 @@ and Chart.js. It does not require a backend for the simulation itself.
 
 ## Starter repository
 
-This repository intentionally includes no learner-facing experiments. Every
-release contains a `runtime-config.example/` template. On its first start, the
-server copies it to a user-owned `runtime-config/` folder. Create experiments
-there after extracting the release; later release updates do not overwrite that
-folder.
+This repository intentionally includes no learner-facing experiments. In a
+production integration, configuration is owned by the practice and lives next
+to, rather than inside, the extracted release. The release only reads those
+files; it never creates, copies, or modifies them.
 
 ## Run locally
 
@@ -58,15 +57,15 @@ Experiment JSON
   -> Canvas renderer + controls + instrumentation + chart
 ```
 
-In a release, experiment definitions live in `runtime-config/experiments/` and
-are loaded over HTTP when the application starts. The shared runtime means an
-ordinary new experiment is authored as configuration, rather than as a new UI
-or JavaScript implementation.
+In a release, the parent folder of `bespoke-simulation/` contains the settings
+file and `experiments/` directory. They are loaded over HTTP when the
+application starts. The shared runtime means an ordinary new experiment is
+authored as configuration, rather than as a new UI or JavaScript implementation.
 
 | Location | Responsibility |
 | --- | --- |
-| `runtime-config.example/` | Versioned template copied once into user-owned runtime configuration. |
-| `runtime-config/` | Ignored, user-owned settings and experiment JSON files. Never included in a release archive. |
+| `../physics-lab.settings.json` | User-owned environment and experiment-selection settings beside the extracted release. |
+| `../experiments/` | User-owned experiment JSON files beside the extracted release. Never included in a release archive. |
 | `client/config-validator.js` | Validates scene configuration before it is used. |
 | `client/scene-builder.js` | Converts scene objects into Rapier bodies and colliders. |
 | `client/simulation-runtime.js` | Runs the fixed-step physics loop, controls forces and reset behavior, and exposes state. |
@@ -76,7 +75,7 @@ or JavaScript implementation.
 
 ## Configure a learner-facing practice
 
-Set the scene path and ID in `runtime-config/physics-lab.settings.json` and hide the picker:
+Set the scene path and ID in `../physics-lab.settings.json` and hide the picker:
 
 ```json
 {
@@ -99,25 +98,34 @@ learner controls, measurements, trails, vectors, and graph configuration.
 
 At a high level:
 
-1. Copy `runtime-config.example/` to `runtime-config/` if it does not already exist.
-2. Add `runtime-config/experiments/my-experiment.json`.
-3. Set its path and ID in `runtime-config/physics-lab.settings.json`.
-4. Test it in the browser, then run `npm test` and `npm run build` when working from source.
+1. Add `../experiments/my-experiment.json` beside the extracted release.
+2. Set its path and ID in `../physics-lab.settings.json`.
+3. Test it in the browser, then run `npm test` and `npm run build` when working from source.
 
 ## Run an extracted release
 
-After extracting `release.tar.gz`, work from the release root, not from its
-`dist/` folder:
+The integration owns the following directory layout. The configuration files
+may be written before the release is extracted:
+
+```text
+practice-directory/
+├── physics-lab.settings.json
+├── experiments/
+│   └── my-experiment.json
+└── bespoke-simulation/       # extracted release
+```
+
+Start the release from its root, not from its `dist/` folder:
 
 ```bash
 cd bespoke-simulation
 npm run start:prod
 ```
 
-On first start, the server creates `runtime-config/` from the included template.
-Then add an experiment JSON file to `runtime-config/experiments/` and point
-`runtime-config/physics-lab.settings.json` at it. The production server serves
-that folder at `/runtime-config/`.
+The production server maps `physics-lab.settings.json` and files below
+`experiments/` from the parent directory to `/runtime-config/`. It never
+creates, copies, or edits those files. Set `PHYSICS_LAB_CONFIG_DIR` to use a
+different configuration root.
 
 World values use SI units: metres, seconds, kilograms, newtons, joules, and
 radians. Positive X points right and positive Y points up. Dynamic bodies are

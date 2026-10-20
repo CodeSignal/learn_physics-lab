@@ -34,9 +34,9 @@ This template provides:
    The development server runs on `http://localhost:3000`.
 
 4. **Configure an experiment**:
-   - Copy `runtime-config.example/` to the ignored `runtime-config/` folder.
-   - Add JSON files to `runtime-config/experiments/` and select them in
-     `runtime-config/physics-lab.settings.json`. Do not modify compiled assets.
+   - Add JSON files to `../experiments/` and select them in
+     `../physics-lab.settings.json`, beside the extracted release. Do not modify
+     compiled assets.
 
 ## Key Conventions
 
@@ -77,8 +77,9 @@ Run an extracted release from its root directory, where `package.json` and
 npm run start:prod
 ```
 
-The production server serves `dist/`, including its editable settings and
-experiment JSON files.
+The production server serves `dist/` and reads the practice-owned
+`../physics-lab.settings.json` and `../experiments/` files. It never modifies
+those configuration files.
 
 ### WebSocket Messaging
 
