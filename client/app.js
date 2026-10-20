@@ -216,6 +216,26 @@ async function initialiseHelp() {
 async function init() {
   renderer = new CanvasRenderer($('#simulation-canvas'));
   graphs = new GraphManager($('#graph-canvas'));
+  $('#run-button').addEventListener('click', () => {
+    if (!runtime) return;
+    runtime.toggle();
+    syncUI();
+  });
+  $('#pause-button').addEventListener('click', () => {
+    if (!runtime) return;
+    runtime.pause();
+    syncUI();
+  });
+  $('#reset-button').addEventListener('click', () => {
+    if (!runtime) return;
+    runtime.reset();
+    syncUI();
+  });
+  $('#center-view-button').addEventListener('click', () => {
+    if (!runtime) return;
+    renderer.centerOnObject(runtime.getState());
+    syncUI();
+  });
   await initialiseHelp();
 
   const configuration = await loadRuntimeConfiguration();
