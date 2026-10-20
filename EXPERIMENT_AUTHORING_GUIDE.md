@@ -20,30 +20,49 @@ npm test
 npm run build
 ```
 
-## The experiment file you change
+## Where experiment files live
 
-Create `client/experiments/my-experiment.json`. Vite automatically discovers
-every `.json` file in that folder when the application starts or builds, so you
-never need to edit `client/scenes.js` for an ordinary experiment. In testing
-mode, the experiment picker lists discovered files in alphabetical filename
-order.
+For local source development, create
+`client/public/experiments/my-experiment.json`. Vite copies that folder into
+`dist/experiments/` when it builds. For an extracted release, create the file
+directly in `dist/experiments/`. Physics Lab loads the configured JSON at
+startup, so no JavaScript rebuild is needed after editing a release.
 
 ## Choose the learner-facing experiment
 
-`client/lab-settings.js` is the application-level settings file. It selects the one experiment shown to learners:
+`physics-lab.settings.json` is the application-level settings file. Use
+`client/public/physics-lab.settings.json` during source development, or
+`dist/physics-lab.settings.json` after extracting a release. It selects the
+one experiment shown to learners:
 
-```js
-export const labSettings = Object.freeze({
-  experimentId: 'my-experiment',
-  showExperimentPicker: false,
-});
+```json
+{
+  "experimentPath": "./experiments/my-experiment.json",
+  "experimentId": "my-experiment",
+  "showExperimentPicker": false
+}
 ```
 
-Use the JSON scene's `id` as `experimentId`. Set `showExperimentPicker: true` while developing or QA-testing multiple scenes. Set it to `false` for a learner-facing practice: the selected experiment loads directly and the experiment selector is hidden. The application fails visibly at startup if the configured id does not exist, rather than silently showing a different experiment.
+Use the JSON scene's `id` as `experimentId`. Set `showExperimentPicker: true` while developing or QA-testing multiple scenes. Set it to `false` for a learner-facing practice: the selected experiment loads directly and the experiment selector is hidden. The application fails visibly at startup if the configured path or id does not exist, rather than silently showing a different experiment.
+
+To offer multiple authored experiments during testing, use `experimentPaths`:
+
+```json
+{
+  "experimentPaths": [
+    "./experiments/first-experiment.json",
+    "./experiments/second-experiment.json"
+  ],
+  "experimentId": "first-experiment",
+  "showExperimentPicker": true
+}
+```
 
 ## Copyable starter experiment
 
-Copy this into `client/experiments/my-experiment.json`, then change the names, positions, and values to create your experiment.
+Copy this into `client/public/experiments/my-experiment.json` during source
+development, or `dist/experiments/my-experiment.json` in an extracted release,
+then change the names, positions, and values to create your experiment.
 
 ```json
 {

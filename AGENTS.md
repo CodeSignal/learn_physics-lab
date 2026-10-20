@@ -1,7 +1,7 @@
 # Repository Guidelines
 
-This repository contains a template for building embedded applications using
-the Bespoke Simulation framework. For complete template documentation, see
+This repository contains Physics Lab, an embedded 2D mechanics simulator built
+on the Bespoke Simulation framework. For complete template documentation, see
 [BESPOKE-TEMPLATE.md](./BESPOKE-TEMPLATE.md).
 
 ## Overview
@@ -10,7 +10,7 @@ This template provides:
 - CodeSignal Design System integration
 - Consistent layout components (header, sidebar, main content area)
 - Help modal system
-- Local development server with WebSocket support
+- Runtime-loaded experiment configurations
 - Standardized file structure and naming conventions
 
 ## Quick Start
@@ -29,9 +29,15 @@ This template provides:
 
 3. **Start the development server**:
    ```bash
-   npm start
+   npm run dev:vite -- --port 3000
    ```
-   Server runs on `http://localhost:3000`
+   The development server runs on `http://localhost:3000`.
+
+4. **Configure an experiment**:
+   - During source development, add JSON files to `client/public/experiments/`
+     and select them in `client/public/physics-lab.settings.json`.
+   - In an extracted release, use `dist/experiments/` and
+     `dist/physics-lab.settings.json` instead. Do not modify compiled assets.
 
 ## Key Conventions
 
@@ -56,12 +62,24 @@ This template provides:
 ### Build and Test
 
 ```bash
-# Start development server
-npm start
+# Start the Vite development server
+npm run dev:vite -- --port 3000
 
-# Development mode (same as start)
-npm run dev
+# Validate a production build
+npm run build
 ```
+
+### Production releases
+
+Run an extracted release from its root directory, where `package.json` and
+`server.js` live:
+
+```bash
+npm run start:prod
+```
+
+The production server serves `dist/`, including its editable settings and
+experiment JSON files.
 
 ### WebSocket Messaging
 
