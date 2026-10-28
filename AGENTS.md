@@ -37,6 +37,8 @@ This template provides:
    - Add JSON files to `../experiments/` and select them in
      `../physics-lab.settings.json`, beside the extracted release. Do not modify
      compiled assets.
+   - Use `annotations` and `environment.coordinateSystem` for visual-only scene
+     markings. Never model annotations as physics objects.
 
 ## Key Conventions
 

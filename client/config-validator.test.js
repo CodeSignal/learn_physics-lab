@@ -26,4 +26,21 @@ describe('scene configuration', () => {
     scene.learnerControls = [{ id: 'bad', targetType: 'object', targetId: 'missing', property: 'mass', min: 1, max: 2, step: 1, value: 1 }];
     expect(() => validateScene(scene)).toThrow('unknown object control target');
   });
+  it('accepts visual-only annotations and a coordinate system', () => {
+    const scene = baseScene();
+    scene.objects = [{ id: 'present', shape: 'rectangle', bodyType: 'fixed', position: { x: 0, y: 0 }, width: 1, height: 1 }];
+    scene.environment.coordinateSystem = { enabled: true, grid: true, axes: true, labels: true, step: 1 };
+    scene.annotations = [
+      { id: 'origin-note', type: 'text', text: 'Start here', position: { x: 0, y: 0.5 }, color: '#123456' },
+      { id: 'reference', type: 'point', position: { x: 2, y: 1 }, showCoordinates: true },
+      { id: 'guide', type: 'line', from: { x: 0, y: 0 }, to: { x: 2, y: 1 }, dashed: true }
+    ];
+    expect(validateScene(scene)).toBe(scene);
+  });
+  it('rejects annotations with invalid coordinates', () => {
+    const scene = baseScene();
+    scene.objects = [{ id: 'present', shape: 'rectangle', bodyType: 'fixed', position: { x: 0, y: 0 }, width: 1, height: 1 }];
+    scene.annotations = [{ type: 'point', position: { x: 'two', y: 1 } }];
+    expect(() => validateScene(scene)).toThrow('finite position');
+  });
 });
