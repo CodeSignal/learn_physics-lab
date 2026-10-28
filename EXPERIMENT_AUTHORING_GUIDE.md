@@ -150,7 +150,10 @@ shown by default; add this object to show axes and numbered tick labels, or set
 ```
 
 `step` is the distance in metres between grid and tick marks. Omit it to let
-the renderer select a readable spacing as learners zoom.
+the renderer select a readable spacing as learners zoom. Number labels thin out
+automatically as learners zoom out, so they do not overlap. When `axes` is
+enabled, `+x` and `+y` direction arrows remain at the right and top canvas
+borders even after panning the origin off screen.
 
 ## Visual annotations
 

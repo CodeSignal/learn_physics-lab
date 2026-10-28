@@ -54,6 +54,11 @@ export class CanvasRenderer {
     return (unit < 1.5 ? 1 : unit < 3.5 ? 2 : unit < 7.5 ? 5 : 10) * power;
   }
 
+  readableStep(minimumPixels) {
+    const raw = minimumPixels / this.view.scale, power = 10 ** Math.floor(Math.log10(raw)), unit = raw / power;
+    return (unit < 1.5 ? 1 : unit < 3.5 ? 2 : unit < 7.5 ? 5 : 10) * power;
+  }
+
   starterScale(bounds) {
     return Math.min(this.canvas.clientWidth / (bounds.right - bounds.left), this.canvas.clientHeight / (bounds.top - bounds.bottom));
   }
@@ -81,14 +86,20 @@ export class CanvasRenderer {
     ctx.save(); ctx.strokeStyle = 'rgba(41,56,91,.62)'; ctx.lineWidth = 1.5;
     if (originX >= 0 && originX <= width) { ctx.beginPath(); ctx.moveTo(originX, 0); ctx.lineTo(originX, height); ctx.stroke(); }
     if (originY >= 0 && originY <= height) { ctx.beginPath(); ctx.moveTo(0, originY); ctx.lineTo(width, originY); ctx.stroke(); }
+    const axisY = Math.min(Math.max(originY, 18), height - 18);
+    const axisX = Math.min(Math.max(originX, 18), width - 18);
+    ctx.fillStyle = 'rgba(41,56,91,.8)'; ctx.strokeStyle = 'rgba(41,56,91,.8)'; ctx.font = '600 12px Work Sans, sans-serif'; ctx.textBaseline = 'middle';
+    ctx.beginPath(); ctx.moveTo(width - 34, axisY); ctx.lineTo(width - 10, axisY); ctx.stroke(); ctx.beginPath(); ctx.moveTo(width - 10, axisY); ctx.lineTo(width - 17, axisY - 4); ctx.lineTo(width - 17, axisY + 4); ctx.fill(); ctx.textAlign = 'right'; ctx.fillText('+x', width - 38, axisY - 10);
+    ctx.beginPath(); ctx.moveTo(axisX, 34); ctx.lineTo(axisX, 10); ctx.stroke(); ctx.beginPath(); ctx.moveTo(axisX, 10); ctx.lineTo(axisX - 4, 17); ctx.lineTo(axisX + 4, 17); ctx.fill(); ctx.textAlign = 'left'; ctx.fillText('+y', axisX + 8, 18);
     if (config.labels === true) {
       const compact = (value) => Number(value.toFixed(6)).toString();
+      const labelStep = Math.max(step, this.readableStep(54));
       ctx.fillStyle = '#56627c'; ctx.font = '11px Work Sans, sans-serif';
       ctx.textBaseline = 'top';
       const labelY = Math.min(Math.max(originY + 4, 4), height - 16);
       const labelX = Math.min(Math.max(originX + 4, 4), width - 36);
-      for (let x = Math.ceil(visible.left / step) * step; x <= visible.right; x += step) { if (Math.abs(x) < step / 1000) continue; const [screenX] = point(x, 0); ctx.textAlign = 'center'; ctx.fillText(compact(x), screenX, labelY); }
-      for (let y = Math.ceil(visible.bottom / step) * step; y <= visible.top; y += step) { if (Math.abs(y) < step / 1000) continue; const [, screenY] = point(0, y); ctx.textAlign = 'left'; ctx.fillText(compact(y), labelX, screenY - 6); }
+      for (let x = Math.ceil(visible.left / labelStep) * labelStep; x <= visible.right; x += labelStep) { if (Math.abs(x) < labelStep / 1000) continue; const [screenX] = point(x, 0); ctx.textAlign = 'center'; ctx.fillText(compact(x), screenX, labelY); }
+      for (let y = Math.ceil(visible.bottom / labelStep) * labelStep; y <= visible.top; y += labelStep) { if (Math.abs(y) < labelStep / 1000) continue; const [, screenY] = point(0, y); ctx.textAlign = 'left'; ctx.fillText(compact(y), labelX, screenY - 6); }
       if (originX >= 0 && originX <= width && originY >= 0 && originY <= height) { ctx.textAlign = 'left'; ctx.fillText('0', originX + 4, originY + 4); }
     }
     ctx.restore();
