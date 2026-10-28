@@ -51,4 +51,15 @@ describe('Rapier simulation runtime', () => {
     expect(runtime.getState().objects.body.x).toBeCloseTo(0, 6);
     runtime.destroy();
   });
+  it('exposes visual annotations without adding physics bodies', async () => {
+    const config = scene();
+    config.environment.coordinateSystem = { axes: true, labels: true };
+    config.annotations = [{ id: 'reference', type: 'point', position: { x: 3, y: 1 }, showCoordinates: true }];
+    const runtime = await SimulationRuntime.create(config);
+    const state = runtime.getState();
+    expect(state.annotations).toEqual(config.annotations);
+    expect(state.coordinateSystem).toEqual(config.environment.coordinateSystem);
+    expect(Object.keys(state.objects)).toHaveLength(2);
+    runtime.destroy();
+  });
 });

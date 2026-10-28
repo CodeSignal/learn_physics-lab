@@ -132,6 +132,88 @@ All physics values use SI units:
 
 World positive X points right and positive Y points up. The canvas flips Y for display automatically. `bounds` set the initial camera framing; they do not restrict the procedural grid or stop bodies from leaving the view.
 
+### Coordinate system
+
+Configure an optional coordinate-system layer inside `environment`. It is a
+visual aid only: it cannot affect bodies or physics. The faint grid remains
+shown by default; add this object to show axes and numbered tick labels, or set
+`enabled` to `false` to hide the complete coordinate layer.
+
+```json
+"coordinateSystem": {
+  "enabled": true,
+  "grid": true,
+  "axes": true,
+  "labels": true,
+  "step": 1
+}
+```
+
+`step` is the distance in metres between grid and tick marks. Omit it to let
+the renderer select a readable spacing as learners zoom.
+
+## Visual annotations
+
+`annotations` create non-collidable markings in world coordinates. They are
+not objects, do not need a `bodyType`, and are not attached to any body. As the
+learner pans or zooms, they remain at their configured coordinates.
+
+### Text
+
+```json
+{
+  "id": "launch-note",
+  "type": "text",
+  "text": "Launch point",
+  "position": { "x": 0, "y": 0.7 },
+  "color": "#29385b",
+  "fontSize": 14,
+  "align": "center"
+}
+```
+
+Use `offset` to move the rendered text without changing its world anchor. Its
+`x` and `y` values are measured in metres.
+
+```json
+"offset": { "x": 0.2, "y": 0.15 }
+```
+
+### Coordinate markers
+
+```json
+{
+  "id": "reference-point",
+  "type": "point",
+  "position": { "x": 3, "y": 2 },
+  "label": "Reference",
+  "showCoordinates": true,
+  "radius": 0.08,
+  "color": "#377dff",
+  "offset": { "x": 0.18, "y": 0.12 }
+}
+```
+
+`showCoordinates: true` shows `(x, y)` when no custom `label` is provided.
+`radius` is in metres. Markers and labels remain visual-only.
+
+### Guide lines
+
+```json
+{
+  "id": "height-guide",
+  "type": "line",
+  "from": { "x": 0, "y": 0 },
+  "to": { "x": 0, "y": 4 },
+  "color": "#7a89ad",
+  "lineWidth": 1.5,
+  "dashed": true
+}
+```
+
+Lines can be used to mark heights, displacement components, or boundaries
+without introducing a collider.
+
 ## Scene fields
 
 Every scene needs the following top-level fields.
@@ -144,6 +226,7 @@ Every scene needs the following top-level fields.
 | `description` | Recommended | Explains the experiment and appears in the UI. |
 | `concepts` | Recommended | Short conceptual tags retained for future use. |
 | `environment` | Yes | Gravity, duration, fixed physics time step, and initial bounds. |
+| `annotations` | No | Visual-only text, points, and guide lines in world coordinates. They never create physics bodies or collisions. |
 | `objects` | Yes | At least one body. |
 | `forces` | No | Forces, torques, and impulses. |
 | `learnerControls` | No | The only properties learners may alter. |
