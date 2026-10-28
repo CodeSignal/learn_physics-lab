@@ -86,14 +86,9 @@ export class CanvasRenderer {
     ctx.save(); ctx.strokeStyle = 'rgba(41,56,91,.62)'; ctx.lineWidth = 1.5;
     if (originX >= 0 && originX <= width) { ctx.beginPath(); ctx.moveTo(originX, 0); ctx.lineTo(originX, height); ctx.stroke(); }
     if (originY >= 0 && originY <= height) { ctx.beginPath(); ctx.moveTo(0, originY); ctx.lineTo(width, originY); ctx.stroke(); }
-    const axisY = Math.min(Math.max(originY, 18), height - 18);
-    const axisX = Math.min(Math.max(originX, 18), width - 18);
-    ctx.fillStyle = 'rgba(41,56,91,.8)'; ctx.strokeStyle = 'rgba(41,56,91,.8)'; ctx.font = '600 12px Work Sans, sans-serif'; ctx.textBaseline = 'middle';
-    ctx.beginPath(); ctx.moveTo(width - 34, axisY); ctx.lineTo(width - 10, axisY); ctx.stroke(); ctx.beginPath(); ctx.moveTo(width - 10, axisY); ctx.lineTo(width - 17, axisY - 4); ctx.lineTo(width - 17, axisY + 4); ctx.fill(); ctx.textAlign = 'right'; ctx.fillText('+x', width - 38, axisY - 10);
-    ctx.beginPath(); ctx.moveTo(axisX, 34); ctx.lineTo(axisX, 10); ctx.stroke(); ctx.beginPath(); ctx.moveTo(axisX, 10); ctx.lineTo(axisX - 4, 17); ctx.lineTo(axisX + 4, 17); ctx.fill(); ctx.textAlign = 'left'; ctx.fillText('+y', axisX + 8, 18);
     if (config.labels === true) {
       const compact = (value) => Number(value.toFixed(6)).toString();
-      const labelStep = Math.max(step, this.readableStep(54));
+      const labelStep = this.readableStep(54);
       ctx.fillStyle = '#56627c'; ctx.font = '11px Work Sans, sans-serif';
       ctx.textBaseline = 'top';
       const labelY = Math.min(Math.max(originY + 4, 4), height - 16);
