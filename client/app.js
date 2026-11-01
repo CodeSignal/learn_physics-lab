@@ -171,8 +171,6 @@ function setControlsDisabled(disabled) {
 
 function showEmptyState(title, description, status = 'Not configured') {
   $('#scene-title').textContent = title;
-  $('#scene-subtitle').textContent = description;
-  $('#scene-description').textContent = description;
   $('#parameter-controls').replaceChildren();
   $('#empty-state').hidden = false;
   $('#simulation-canvas').hidden = true;
@@ -198,8 +196,6 @@ async function loadScene(id) {
   $('#graphs-panel').hidden = !graph;
   $('#graph-title').textContent = graph?.title || 'Measurement graph';
   $('#scene-title').textContent = activeScene.title.replace(/^\d+ · /, '');
-  $('#scene-subtitle').textContent = activeScene.description;
-  $('#scene-description').textContent = activeScene.description;
   syncUI();
 }
 
