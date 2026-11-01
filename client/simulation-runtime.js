@@ -1,6 +1,7 @@
 import RAPIER from '@dimforge/rapier2d-compat';
 import { SceneBuilder } from './scene-builder.js';
 import { Instrumentation } from './instrumentation/instrumentation.js';
+import { normalizedControlProperty, setNumericPath, splitControlTargetIds } from './control-schema.js';
 const clone = value => structuredClone(value);
 const magnitude = vector => Math.hypot(vector.x, vector.y);
 export class SimulationRuntime {
@@ -8,8 +9,31 @@ export class SimulationRuntime {
   constructor(config) { this.load(config); }
   load(config) { this.source = clone(config); this.parameters = new Map(config.learnerControls.map(control => [control.id, control.value])); this.reset(); }
   reset() { this.builder?.destroy(); const next = clone(this.source); next.learnerControls.forEach(control => this.applyControl(next, control, this.parameters.get(control.id))); this.builder = new SceneBuilder(next).build(); this.config = next; this.time = 0; this.accumulator = 0; this.status = 'ready'; this.lastFrame = null; this.appliedOneShots = new Set(); this.previousVelocities = new Map(); this.instrumentation = new Instrumentation(next); this.instrumentation.reset(this.getState()); }
-  applyControl(scene, control, value) { const targets = control.targetId?.split(',') || []; if (control.targetType === 'force') { const force = scene.forces.find(item => item.id === control.targetId); if (control.property === 'angle') { const size = magnitude(force.vector) || 1, radians = value * Math.PI / 180; force.vector = { x: Math.cos(radians) * size, y: Math.sin(radians) * size }; } else { const initial = magnitude(force.vector) || 1; force.vector = { x: force.vector.x / initial * value, y: force.vector.y / initial * value }; } } else if (control.targetType === 'environment') scene.environment.gravity.y = -value; else targets.forEach(id => { const object = scene.objects.find(item => item.id === id); if (!object) return; if (control.property === 'initialVelocityX') object.initialVelocity = { ...(object.initialVelocity || {}), x: value }; else object[control.property] = value; }); }
-  setParameter(id, value) { const control = this.source.learnerControls.find(item => item.id === id); if (!control || !Number.isFinite(value) || value < control.min || value > control.max) return false; this.parameters.set(id, Math.round(value / control.step) * control.step); this.reset(); return true; }
+  applyControl(scene, control, value) {
+    const property = normalizedControlProperty(control);
+    if (control.targetType === 'force') {
+      const force = scene.forces.find((item) => item.id === control.targetId);
+      if (property === 'angle') {
+        const size = magnitude(force.vector) || 1;
+        const radians = value * Math.PI / 180;
+        force.vector = { x: Math.cos(radians) * size, y: Math.sin(radians) * size };
+      } else if (property === 'magnitude') {
+        const initial = magnitude(force.vector) || 1;
+        force.vector = { x: force.vector.x / initial * value, y: force.vector.y / initial * value };
+      } else {
+        setNumericPath(force, property, value);
+      }
+    } else if (control.targetType === 'environment') {
+      if (property === 'gravityMagnitude') scene.environment.gravity.y = -value;
+      else setNumericPath(scene.environment, property, value);
+    } else {
+      splitControlTargetIds(control.targetId).forEach((id) => {
+        const object = scene.objects.find((item) => item.id === id);
+        if (object) setNumericPath(object, property, value);
+      });
+    }
+  }
+  setParameter(id, value) { const control = this.source.learnerControls.find(item => item.id === id); if (!control || !Number.isFinite(value) || value < control.min || value > control.max) return false; this.parameters.set(id, control.min + Math.round((value - control.min) / control.step) * control.step); this.reset(); return true; }
   start() { if (this.status === 'complete') this.reset(); this.status = 'running'; this.lastFrame = null; } resume() { this.start(); } pause() { if (this.status === 'running') this.status = 'paused'; } toggle() { this.status === 'running' ? this.pause() : this.start(); }
   frame(now) { if (this.status !== 'running') return; if (this.lastFrame === null) { this.lastFrame = now; return; } this.accumulator += Math.min((now - this.lastFrame) / 1000, .1); this.lastFrame = now; const dt = this.config.environment.timestep; while (this.accumulator >= dt && this.status === 'running') { this.step(dt); this.accumulator -= dt; } }
   step(dt = this.config.environment.timestep) { if (this.time >= this.config.environment.duration) { this.status = 'complete'; return; } this.builder.bodies.forEach((body, id) => { this.previousVelocities.set(id, { ...body.linvel() }); body.resetForces(true); body.resetTorques(true); }); this.config.forces.forEach(force => { const body = this.builder.bodies.get(force.target); if (force.type === 'constant-force' && force.continuous !== false) body.addForce(force.vector, true); if (force.type === 'constant-torque' && force.continuous !== false) body.addTorque(force.torque, true); if (force.type === 'impulse' && !this.appliedOneShots.has(force.id)) { body.applyImpulse(force.vector, true); this.appliedOneShots.add(force.id); } }); this.builder.world.timestep = dt; this.builder.world.step(); this.time += dt; this.instrumentation.observe(this.getState()); }

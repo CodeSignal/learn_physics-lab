@@ -26,6 +26,22 @@ describe('scene configuration', () => {
     scene.learnerControls = [{ id: 'bad', targetType: 'object', targetId: 'missing', property: 'mass', min: 1, max: 2, step: 1, value: 1 }];
     expect(() => validateScene(scene)).toThrow('unknown object control target');
   });
+  it('accepts supported nested object control paths and legacy aliases', () => {
+    const scene = baseScene();
+    scene.objects = [{ id: 'cart', shape: 'circle', bodyType: 'dynamic', position: { x: 0, y: 0 }, radius: 1, mass: 1 }];
+    scene.learnerControls = [
+      { id: 'x', targetType: 'object', targetId: 'cart', property: 'position.x', min: -3, max: 3, step: 6, value: -3 },
+      { id: 'legacy-x', targetType: 'object', targetId: 'cart', property: 'initialPositionX', min: -3, max: 3, step: 6, value: -3 },
+      { id: 'velocity', targetType: 'object', targetId: 'cart', property: 'initialVelocity.x', min: 0, max: 2, step: 2, value: 0 }
+    ];
+    expect(validateScene(scene)).toBe(scene);
+  });
+  it('rejects unsupported object control paths', () => {
+    const scene = baseScene();
+    scene.objects = [{ id: 'cart', shape: 'circle', bodyType: 'dynamic', position: { x: 0, y: 0 }, radius: 1, mass: 1 }];
+    scene.learnerControls = [{ id: 'bad-path', targetType: 'object', targetId: 'cart', property: 'render.color', min: 0, max: 1, step: 1, value: 0 }];
+    expect(() => validateScene(scene)).toThrow('unsupported object control property: render.color');
+  });
   it('accepts visual-only annotations and a coordinate system', () => {
     const scene = baseScene();
     scene.objects = [{ id: 'present', shape: 'rectangle', bodyType: 'fixed', position: { x: 0, y: 0 }, width: 1, height: 1 }];

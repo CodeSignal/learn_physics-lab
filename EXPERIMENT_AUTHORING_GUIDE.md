@@ -327,7 +327,41 @@ Controls create sliders and are the only configuration values learners can chang
 { "id": "gravity", "label": "Gravity", "targetType": "environment", "property": "gravityMagnitude", "min": 0, "max": 20, "step": 0.5, "unit": "m/s²", "value": 9.8 }
 ```
 
-Changing a control resets the simulation with the selected values. Supported custom object property handling is currently `initialVelocityX`; ordinary properties such as `mass`, `friction`, and `restitution` are applied directly.
+Changing a control resets and rebuilds the simulation with the selected value.
+For object controls, use a supported property name or nested path. Nested paths
+follow ordinary JSON notation, so `position.x` updates the object's authored
+starting X coordinate and `initialVelocity.y` updates its starting vertical
+velocity. The legacy aliases `initialPositionX`, `initialPositionY`,
+`initialVelocityX`, and `initialVelocityY` continue to work.
+
+Supported object properties are `position.x`, `position.y`,
+`initialVelocity.x`, `initialVelocity.y`, `initialAngularVelocity`, `rotation`,
+`mass` (dynamic objects), `friction`, `restitution`, `linearDamping`,
+`angularDamping`, and the supported shape dimensions (`radius` for circles;
+`width` and `height` for rectangles, platforms, and ramps). A control can
+target one object with `targetType: "object"` or several comma-separated object
+IDs with `targetType: "objects"`.
+
+```json
+{
+  "id": "starting-world-x",
+  "label": "Starting world X",
+  "targetType": "object",
+  "targetId": "cart",
+  "property": "position.x",
+  "min": -3,
+  "max": 3,
+  "step": 6,
+  "unit": "m",
+  "value": -3
+}
+```
+
+Force controls support `magnitude`, `angle`, and `vector.x`/`vector.y` for
+forces and impulses, and `torque` for constant torques. Environment controls
+support `gravityMagnitude` (the legacy downward-gravity control), `gravity.x`,
+and `gravity.y`. All control values are numeric; unsupported paths are rejected
+when the experiment is loaded.
 
 ## Instrumentation
 

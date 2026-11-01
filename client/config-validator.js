@@ -1,4 +1,5 @@
 import { hasQuantity } from './instrumentation/measurement-registry.js';
+import { controlPropertyIsSupported, normalizedControlProperty, splitControlTargetIds } from './control-schema.js';
 const bodyTypes = new Set(['dynamic', 'fixed', 'kinematic']);
 const shapes = new Set(['rectangle', 'circle', 'platform', 'ramp']);
 const forceTypes = new Set(['constant-force', 'constant-torque', 'impulse']);
@@ -70,9 +71,22 @@ export function validateScene(scene) {
     if (!control.id || controlIds.has(control.id)) throw error(scene.id, 'learner control ids must be unique.');
     controlIds.add(control.id);
     if (!(positive(control.step) && numeric(control.min) && numeric(control.max) && numeric(control.value) && control.min <= control.value && control.value <= control.max && Math.abs((control.value - control.min) / control.step - Math.round((control.value - control.min) / control.step)) < 1e-8)) throw error(control.id, 'invalid learner-control range.');
-    if (control.targetType === 'force' && !forceIds.has(control.targetId)) throw error(control.id, 'unknown force control target.');
-    if (['object', 'objects'].includes(control.targetType) && !control.targetId.split(',').every(id => objectIds.has(id))) throw error(control.id, 'unknown object control target.');
     if (!['force', 'object', 'objects', 'environment'].includes(control.targetType)) throw error(control.id, 'unsupported learner-control target.');
+    const property = normalizedControlProperty(control);
+    if (!property) throw error(control.id, 'learner-control property must be a non-empty string.');
+    if (control.targetType === 'force') {
+      const force = (scene.forces || []).find(item => item.id === control.targetId);
+      if (!force) throw error(control.id, 'unknown force control target.');
+      if (!controlPropertyIsSupported(control, [force])) throw error(control.id, `unsupported force control property: ${control.property}.`);
+    } else if (['object', 'objects'].includes(control.targetType)) {
+      const targetIds = splitControlTargetIds(control.targetId);
+      if (!targetIds.length || !targetIds.every(id => objectIds.has(id))) throw error(control.id, 'unknown object control target.');
+      const targets = targetIds.map(id => scene.objects.find(object => object.id === id));
+      if (!controlPropertyIsSupported(control, targets)) throw error(control.id, `unsupported object control property: ${control.property}.`);
+      if (['mass', 'width', 'height', 'radius'].includes(property) && control.min <= 0) throw error(control.id, `${property} controls require a positive minimum value.`);
+    } else if (!controlPropertyIsSupported(control)) {
+      throw error(control.id, `unsupported environment control property: ${control.property}.`);
+    }
   });
   (scene.measurements || []).forEach(measurement => { if (!objectIds.has(measurement.objectId) || !measurement.property || !measurement.unit) throw error(scene.id, 'invalid measurement.'); });
   const instruments = scene.instrumentation;
