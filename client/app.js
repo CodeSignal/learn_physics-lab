@@ -171,6 +171,7 @@ function setControlsDisabled(disabled) {
 
 function showEmptyState(title, description, status = 'Not configured') {
   $('#scene-title').textContent = title;
+  $('#empty-state-message').textContent = description;
   $('#parameter-controls').replaceChildren();
   $('#empty-state').hidden = false;
   $('#simulation-canvas').hidden = true;

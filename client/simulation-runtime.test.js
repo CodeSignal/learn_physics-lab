@@ -33,6 +33,36 @@ describe('Rapier simulation runtime', () => {
     expect(runtime.getState().objects.body.velocity.x).toBeCloseTo(0, 6);
     runtime.destroy();
   });
+  it('applies a non-continuous constant force once per run and again after reset', async () => {
+    const config = scene();
+    config.environment.gravity = { x: 0, y: 0 };
+    config.forces = [{ id: 'single-push', target: 'body', type: 'constant-force', vector: { x: 4, y: 0 }, continuous: false }];
+    const runtime = await SimulationRuntime.create(config);
+    runtime.step();
+    const firstVelocity = runtime.getState().objects.body.velocity.x;
+    expect(firstVelocity).toBeGreaterThan(0);
+    runtime.step();
+    expect(runtime.getState().objects.body.velocity.x).toBeCloseTo(firstVelocity, 6);
+    runtime.reset();
+    runtime.step();
+    expect(runtime.getState().objects.body.velocity.x).toBeCloseTo(firstVelocity, 6);
+    runtime.destroy();
+  });
+  it('applies a non-continuous constant torque once per run and again after reset', async () => {
+    const config = scene();
+    config.environment.gravity = { x: 0, y: 0 };
+    config.forces = [{ id: 'single-torque', target: 'body', type: 'constant-torque', torque: 2, continuous: false }];
+    const runtime = await SimulationRuntime.create(config);
+    runtime.step();
+    const firstAngularVelocity = runtime.getState().objects.body.angularVelocity;
+    expect(firstAngularVelocity).toBeGreaterThan(0);
+    runtime.step();
+    expect(runtime.getState().objects.body.angularVelocity).toBeCloseTo(firstAngularVelocity, 6);
+    runtime.reset();
+    runtime.step();
+    expect(runtime.getState().objects.body.angularVelocity).toBeCloseTo(firstAngularVelocity, 6);
+    runtime.destroy();
+  });
   it('preserves an allowed parameter through reset and rejects invalid values', async () => {
     const runtime = await SimulationRuntime.create(scene());
     expect(runtime.setParameter('mass', 4)).toBe(true);
