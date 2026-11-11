@@ -219,7 +219,7 @@ async function init() {
   });
   $('#center-view-button').addEventListener('click', () => {
     if (!runtime) return;
-    renderer.centerOnObject(runtime.getState());
+    renderer.fitObjects(runtime.getState());
     syncUI();
   });
   await initialiseHelp();
