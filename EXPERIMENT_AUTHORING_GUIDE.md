@@ -308,7 +308,7 @@ Configured impulse arrows become dashed after firing so they are visually distin
 
 ## Learner controls
 
-Controls create sliders and are the only configuration values learners can change. Each needs `id`, `label`, `targetType`, `targetId` where applicable, `property`, `min`, `max`, `step`, `unit`, and `value`.
+Controls create sliders and are the only configuration values learners can change. Each needs `id`, `label`, `targetType`, `targetId` where applicable, `property`, `min`, `max`, `step`, `unit`, and `value`. When `learnerControls` is empty, the Parameters panel tells learners that there are no settings to adjust.
 
 ### Force magnitude and angle
 
@@ -328,6 +328,8 @@ Controls create sliders and are the only configuration values learners can chang
 ```
 
 Changing a control resets and rebuilds the simulation with the selected value.
+If the experiment has a graph and the current run has recorded samples, its
+trace is kept as a colored comparison before the new run begins.
 For object controls, use a supported property name or nested path. Nested paths
 follow ordinary JSON notation, so `position.x` updates the object's authored
 starting X coordinate and `initialVelocity.y` updates its starting vertical
@@ -377,7 +379,7 @@ Use `instrumentation` for modern learner-facing values, history, trails, vectors
 }
 ```
 
-Sampling is tied to physics time, so rendering frame rate does not change the measurement timeline. When the limit is reached, the oldest samples are discarded. Reset clears history and trails; pause preserves them.
+Sampling is tied to physics time, so rendering frame rate does not change the measurement timeline. When the limit is reached, the oldest samples are discarded. Reset clears the current run's history and trails; pause preserves them. Saved comparison traces remain until the learner selects **Clear comparisons**.
 
 ### Measurements
 
@@ -447,7 +449,7 @@ There is one graph per experiment, displayed directly in the graph panel. It mus
 }
 ```
 
-Supported graph `type` values are `line`, `bar`, and `scatter`. Line graphs are the usual choice for measurements over time.
+Supported graph `type` values are `line`, `bar`, and `scatter`. Line graphs are the usual choice for measurements over time. When an experiment has at least one learner control, changing a control preserves the recorded trace as a separate colored line, labeled with the selected parameter value. Learners can select **Clear comparisons** to remove saved traces while keeping the current run.
 
 ## A complete projectile example
 
