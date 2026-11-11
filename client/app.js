@@ -3,6 +3,7 @@ import { SimulationRuntime } from './simulation-runtime.js';
 import { CanvasRenderer } from './canvas-renderer.js';
 import { GraphManager } from './instrumentation/graph-manager.js';
 import { validateScene } from './config-validator.js';
+import helpContent from './help-content.html?raw';
 
 const $ = (selector) => document.querySelector(selector);
 const SETTINGS_URL = new URL('/runtime-config/physics-lab.settings.json', window.location.origin);
@@ -197,14 +198,10 @@ async function loadScene(id) {
   syncUI();
 }
 
-async function initialiseHelp() {
-  try {
-    const content = await (await fetch('./help-content.html')).text();
-    const modal = Modal.createHelpModal({ title: 'Using Physics Lab', content });
-    $('#btn-help').addEventListener('click', () => modal.open());
-  } catch (error) {
-    console.error(error);
-  }
+function initialiseHelp() {
+  const modal = Modal.createHelpModal({ title: 'Using Physics Lab', content: helpContent });
+  modal.header.classList.add('help-modal-header');
+  $('#btn-help').addEventListener('click', () => modal.open());
 }
 
 async function init() {
