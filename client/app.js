@@ -4,6 +4,7 @@ import { CanvasRenderer } from './canvas-renderer.js';
 import { GraphManager } from './instrumentation/graph-manager.js';
 import { validateScene } from './config-validator.js';
 import helpContent from './help-content.html?raw';
+import Dropdown from './design-system/components/dropdown/dropdown.js';
 
 const $ = (selector) => document.querySelector(selector);
 const SETTINGS_URL = new URL('/runtime-config/physics-lab.settings.json', window.location.origin);
@@ -80,7 +81,10 @@ async function loadRuntimeConfiguration() {
 
 function renderControls(scene) {
   const host = $('#parameter-controls');
+  const hasControls = scene.learnerControls.length > 0;
   host.replaceChildren();
+  $('#parameter-status').hidden = !hasControls;
+  $('#no-parameters-message').hidden = hasControls;
 
   scene.learnerControls.forEach((control) => {
     const item = document.createElement('div');
@@ -181,6 +185,8 @@ function showEmptyState(title, description) {
   $('#scene-title').textContent = title;
   $('#empty-state-message').textContent = description;
   $('#parameter-controls').replaceChildren();
+  $('#parameter-status').hidden = true;
+  $('#no-parameters-message').hidden = true;
   $('#empty-state').hidden = false;
   $('#simulation-canvas').hidden = true;
   $('#lower-panels').hidden = true;
@@ -241,16 +247,9 @@ async function init() {
   const configuration = await loadRuntimeConfiguration();
   scenes = configuration.scenes;
   const picker = $('#scene-select');
-  picker.closest('.scene-picker').hidden = !configuration.settings.showExperimentPicker || scenes.length < 2;
-  picker.replaceChildren(...scenes.map((scene) => new Option(scene.title, scene.id)));
-  picker.addEventListener('change', async (event) => {
-    try {
-      await loadScene(event.target.value);
-    } catch (error) {
-      console.error(error);
-      showEmptyState('Experiment could not load', error.message);
-    }
-  });
+  const showExperimentPicker = configuration.settings.showExperimentPicker && scenes.length > 1;
+  picker.closest('.scene-picker').hidden = !showExperimentPicker;
+  $('#experiment-picker-rule').hidden = !showExperimentPicker;
 
   if (scenes.length === 0) {
     showEmptyState('No experiment configured', 'Add an experiment JSON file to runtime-config/experiments and reference it from runtime-config/physics-lab.settings.json.');
@@ -258,7 +257,19 @@ async function init() {
   }
 
   const selected = configuration.settings.experimentId || scenes[0].id;
-  picker.value = selected;
+  new Dropdown(picker, {
+    items: scenes.map((scene) => ({ label: scene.title, value: scene.id })),
+    selectedValue: selected,
+    width: '100%',
+    onSelect: async (id) => {
+      try {
+        await loadScene(id);
+      } catch (error) {
+        console.error(error);
+        showEmptyState('Experiment could not load', error.message);
+      }
+    },
+  });
   await loadScene(selected);
   const loop = (now) => {
     runtime.frame(now);
