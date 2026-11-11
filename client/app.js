@@ -169,7 +169,7 @@ function syncUI() {
   renderer.render(state);
   renderMeasurements();
   graphs.update(runtime);
-  $('#clear-comparisons-button').hidden = !graphs.hasComparisons();
+  $('#clear-comparisons-button').hidden = !activeScene?.learnerControls.length || !graphs.hasComparisons();
   $('#time-display').textContent = `${fmt(state.time)} s`;
   $('#zoom-level').textContent = `${renderer.getZoomPercent()}%`;
   const running = state.status === 'running';

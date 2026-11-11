@@ -10,6 +10,7 @@
 .no-parameters-message{margin:16px 0 0;color:var(--Colors-Text-Body-Default);font-size:13px;line-height:1.5}
 .scene-picker .dropdown-container,.scene-picker .dropdown-menu{width:100%!important;box-sizing:border-box}
 .scene-picker .dropdown-menu-item,.scene-picker .dropdown-menu-item.selected{width:100%}
+#clear-comparisons-button[hidden]{display:none!important}
 .view-controls{position:absolute;z-index:1;top:12px;right:12px;display:flex;align-items:center;min-height:34px;padding:2px;background:rgba(255,255,255,.96);border:1px solid var(--Colors-Stroke-Default);border-radius:var(--UI-Radius-radius-s);box-shadow:0 4px 12px rgba(22,44,96,.14)}
 .view-control-button,.reset-view-button{display:inline-flex;align-items:center;justify-content:center;min-height:28px;border:0;background:transparent;color:var(--Colors-Base-Neutral-1200);font-family:var(--body-family);font-size:12px;font-weight:600;cursor:pointer;border-radius:var(--UI-Radius-radius-xs)}
 .view-control-button{width:28px;font-size:18px;line-height:1}
