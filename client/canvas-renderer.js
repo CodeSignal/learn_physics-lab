@@ -3,6 +3,7 @@ export class CanvasRenderer {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
     this.view = null;
+    this.referenceScale = null;
     this.drag = null;
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas.parentElement);
@@ -48,6 +49,16 @@ export class CanvasRenderer {
     this.view.centerY += before.y - after.y;
   }
 
+  zoomBy(factor) {
+    if (!this.view) return;
+    this.view.scale = Math.min(500, Math.max(12, this.view.scale * factor));
+  }
+
+  getZoomPercent() {
+    if (!this.view || !this.referenceScale) return 100;
+    return Math.round(this.view.scale / this.referenceScale * 100);
+  }
+
   toWorld(x, y) { return { x: this.view.centerX + (x - this.canvas.clientWidth / 2) / this.view.scale, y: this.view.centerY - (y - this.canvas.clientHeight / 2) / this.view.scale }; }
   gridStep() {
     const raw = 56 / this.view.scale, power = 10 ** Math.floor(Math.log10(raw)), unit = raw / power;
@@ -86,11 +97,13 @@ export class CanvasRenderer {
     const height = Math.max(frame.top - frame.bottom, 0.01);
     const scale = Math.min(this.canvas.clientWidth / (width * 1.15), this.canvas.clientHeight / (height * 1.15));
     this.view = { centerX: (frame.left + frame.right) / 2, centerY: (frame.bottom + frame.top) / 2, scale };
+    this.referenceScale = scale;
   }
 
   resetView(state) {
     const { left, right, bottom, top } = state.bounds;
     this.view = { centerX: (left + right) / 2, centerY: (bottom + top) / 2, scale: this.starterScale(state.bounds) };
+    this.referenceScale = this.view.scale;
   }
 
   drawCoordinateSystem(state, visible, point, width, height) {
@@ -149,7 +162,10 @@ export class CanvasRenderer {
   render(state) {
     const { ctx, canvas } = this;
     const w = canvas.clientWidth, h = canvas.clientHeight, b = state.bounds;
-    if (!this.view) this.view = { centerX: (b.left + b.right) / 2, centerY: (b.bottom + b.top) / 2, scale: this.starterScale(b) };
+    if (!this.view) {
+      this.view = { centerX: (b.left + b.right) / 2, centerY: (b.bottom + b.top) / 2, scale: this.starterScale(b) };
+      this.referenceScale = this.view.scale;
+    }
     const point = (x, y) => [(x - this.view.centerX) * this.view.scale + w / 2, h / 2 - (y - this.view.centerY) * this.view.scale];
     const visible = { left: this.view.centerX - w / 2 / this.view.scale, right: this.view.centerX + w / 2 / this.view.scale, bottom: this.view.centerY - h / 2 / this.view.scale, top: this.view.centerY + h / 2 / this.view.scale };
 

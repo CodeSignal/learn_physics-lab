@@ -2,8 +2,9 @@
 
 Physics Lab is a browser-based, configuration-driven collection of interactive
 2D mechanics experiments. Learners adjust the parameters chosen by an author,
-run a Rapier physics simulation, inspect live measurements, and view the one
-graph configured for that experiment.
+run a Rapier physics simulation, inspect live measurements, and view the graph
+configured for that experiment. When an experiment has adjustable parameters,
+learners can compare graph traces from different values.
 
 The application uses Vite, vanilla JavaScript modules, Canvas 2D, Rapier 2D,
 and Chart.js. It does not require a backend for the simulation itself.
@@ -42,10 +43,13 @@ physics-lab development.
 - Click a displayed slider value to type an exact number; press Enter or click
   away to apply it.
 - Run, pause, reset, or run again after a simulation completes.
-- Pan the canvas and zoom with a mouse wheel or trackpad pinch gesture.
-- Use **Center view** to restore the experiment's initial camera framing.
+- Pan the canvas and zoom with a mouse wheel, trackpad pinch gesture, or the
+  on-canvas zoom controls.
+- Use **Center view** to restore the experiment's initial framing.
 - Observe dotted, translucent motion trails, force/velocity vectors, live
   measurement values, and the experiment's configured chart.
+- After changing a parameter, compare the saved graph traces, or select
+  **Clear comparisons** to start fresh.
 
 ## How it works
 

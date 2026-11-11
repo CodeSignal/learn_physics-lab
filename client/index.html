@@ -23,23 +23,20 @@
 </head>
 <body class="bespoke">
   <header class="header">
-    <div class="brand-mark">∿</div>
-    <h1 class="heading-small">Physics Lab</h1>
-    <span class="header-context">Interactive simulations</span>
+    <h1 class="heading-small">CodeSignal Physics Lab</h1>
     <div class="spacer"></div>
     <button id="btn-help" class="button button-text">How it works</button>
   </header>
   <main class="lab-shell">
     <aside class="control-panel" aria-label="Experiment settings">
       <div class="scene-picker">
-        <div class="panel-eyebrow">Testing only</div>
-        <label class="select-label" for="scene-select">Experiment</label>
-        <select id="scene-select" class="input" aria-label="Choose an experiment"></select>
+        <span id="scene-select-label" class="select-label">Experiment</span>
+        <div id="scene-select" aria-labelledby="scene-select-label"></div>
       </div>
-      <div class="section-rule"></div>
-      <div class="panel-heading-row"><h2>Parameters</h2><span class="parameter-status">Configurable</span></div>
+      <div id="experiment-picker-rule" class="section-rule"></div>
+      <div class="panel-heading-row"><h2>Parameters</h2><span id="parameter-status" class="parameter-status">Configurable</span></div>
       <div id="parameter-controls"></div>
-      <div class="locked-note"><span>⌁</span> Only parameters selected in this scene configuration can be changed.</div>
+      <p id="no-parameters-message" class="no-parameters-message" hidden>This experiment has no settings to adjust. Press Run to explore what happens.</p>
     </aside>
     <section class="workspace" aria-label="Physics simulation">
       <div class="workspace-topbar">
@@ -47,6 +44,13 @@
       </div>
       <div class="simulation-card">
         <canvas id="simulation-canvas" aria-label="Interactive physics simulation"></canvas>
+        <div id="view-controls" class="view-controls" role="group" aria-label="View controls">
+          <button id="zoom-out-button" class="view-control-button" type="button" aria-label="Zoom out">−</button>
+          <output id="zoom-level" class="zoom-level" aria-label="Zoom level">100%</output>
+          <button id="zoom-in-button" class="view-control-button" type="button" aria-label="Zoom in">+</button>
+          <span class="view-control-divider" aria-hidden="true"></span>
+          <button id="center-view-button" class="reset-view-button" type="button">Center view</button>
+        </div>
         <div id="empty-state" class="empty-state" hidden>
           <h2>Ready for your first experiment</h2>
           <p id="empty-state-message">Add a JSON scene configuration in <code>runtime-config/experiments</code>, then select it in <code>runtime-config/physics-lab.settings.json</code>.</p>
@@ -54,8 +58,7 @@
       </div>
       <div class="transport" aria-label="Simulation controls">
         <button id="run-button" class="button button-primary">Run</button>
-        <button id="reset-button" class="button button-text">↺ Reset</button>
-        <button id="center-view-button" class="button button-text">⌖ Center view</button>
+        <button id="reset-button" class="button button-text">↺ Reset experiment</button>
         <div class="time-display"><span>ELAPSED TIME</span><strong id="time-display">0.00 s</strong></div>
       </div>
       <div id="lower-panels" class="lower-grid">
@@ -64,7 +67,7 @@
           <div id="measurement-grid" class="measurements"></div>
         </section>
         <section id="graphs-panel" class="graphs-card box card" aria-label="Measurement graph">
-          <div class="card-heading"><h2 id="graph-title">Measurement graph</h2></div>
+          <div class="card-heading"><h2 id="graph-title">Measurement graph</h2><button id="clear-comparisons-button" class="button button-text" hidden>Clear comparisons</button></div>
           <div id="graph-canvas" class="graph-canvas"></div>
         </section>
       </div>
