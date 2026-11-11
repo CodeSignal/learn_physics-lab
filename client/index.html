@@ -37,14 +37,13 @@
         <select id="scene-select" class="input" aria-label="Choose an experiment"></select>
       </div>
       <div class="section-rule"></div>
-      <div class="panel-heading-row"><h2>Parameters</h2><span class="tag">Configurable</span></div>
+      <div class="panel-heading-row"><h2>Parameters</h2><span class="parameter-status">Configurable</span></div>
       <div id="parameter-controls"></div>
       <div class="locked-note"><span>⌁</span> Only parameters selected in this scene configuration can be changed.</div>
     </aside>
     <section class="workspace" aria-label="Physics simulation">
       <div class="workspace-topbar">
         <div id="scene-title" class="workspace-title"></div>
-        <div id="status-pill" class="status-pill"><span id="status-dot"></span><span id="status-label">Ready</span></div>
       </div>
       <div class="simulation-card">
         <canvas id="simulation-canvas" aria-label="Interactive physics simulation"></canvas>
@@ -54,15 +53,14 @@
         </div>
       </div>
       <div class="transport" aria-label="Simulation controls">
-        <button id="run-button" class="button button-primary">Run simulation</button>
-        <button id="pause-button" class="button button-secondary" disabled>Pause</button>
+        <button id="run-button" class="button button-primary">Run</button>
         <button id="reset-button" class="button button-text">↺ Reset</button>
         <button id="center-view-button" class="button button-text">⌖ Center view</button>
         <div class="time-display"><span>ELAPSED TIME</span><strong id="time-display">0.00 s</strong></div>
       </div>
       <div id="lower-panels" class="lower-grid">
         <section class="measurements-card box card">
-          <div class="card-heading"><h2>Live measurements</h2><span class="live-label"><i></i> LIVE</span></div>
+          <div class="card-heading"><h2>Live measurements</h2></div>
           <div id="measurement-grid" class="measurements"></div>
         </section>
         <section id="graphs-panel" class="graphs-card box card" aria-label="Measurement graph">

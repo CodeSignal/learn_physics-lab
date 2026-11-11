@@ -3,6 +3,7 @@ import { SimulationRuntime } from './simulation-runtime.js';
 import { CanvasRenderer } from './canvas-renderer.js';
 import { GraphManager } from './instrumentation/graph-manager.js';
 import { validateScene } from './config-validator.js';
+import helpContent from './help-content.html?raw';
 
 const $ = (selector) => document.querySelector(selector);
 const SETTINGS_URL = new URL('/runtime-config/physics-lab.settings.json', window.location.origin);
@@ -159,24 +160,20 @@ function syncUI() {
   graphs.update(runtime);
   $('#time-display').textContent = `${fmt(state.time)} s`;
   const running = state.status === 'running';
-  $('#status-label').textContent = running ? 'Running' : state.status === 'paused' ? 'Paused' : state.status === 'complete' ? 'Complete' : 'Ready';
-  $('#status-pill').classList.toggle('running', running);
-  $('#pause-button').disabled = !running;
-  $('#run-button').textContent = state.status === 'paused' ? 'Resume' : state.status === 'complete' ? 'Run again' : 'Run simulation';
+  $('#run-button').textContent = running ? 'Pause' : state.status === 'paused' ? 'Resume' : state.status === 'complete' ? 'Run again' : 'Run';
 }
 
 function setControlsDisabled(disabled) {
-  ['run-button', 'pause-button', 'reset-button', 'center-view-button'].forEach((id) => { $(`#${id}`).disabled = disabled; });
+  ['run-button', 'reset-button', 'center-view-button'].forEach((id) => { $(`#${id}`).disabled = disabled; });
 }
 
-function showEmptyState(title, description, status = 'Not configured') {
+function showEmptyState(title, description) {
   $('#scene-title').textContent = title;
   $('#empty-state-message').textContent = description;
   $('#parameter-controls').replaceChildren();
   $('#empty-state').hidden = false;
   $('#simulation-canvas').hidden = true;
   $('#lower-panels').hidden = true;
-  $('#status-label').textContent = status;
   $('#time-display').textContent = '—';
   setControlsDisabled(true);
 }
@@ -200,14 +197,10 @@ async function loadScene(id) {
   syncUI();
 }
 
-async function initialiseHelp() {
-  try {
-    const content = await (await fetch('./help-content.html')).text();
-    const modal = Modal.createHelpModal({ title: 'Using Physics Lab', content });
-    $('#btn-help').addEventListener('click', () => modal.open());
-  } catch (error) {
-    console.error(error);
-  }
+function initialiseHelp() {
+  const modal = Modal.createHelpModal({ title: 'Using Physics Lab', content: helpContent });
+  modal.header.classList.add('help-modal-header');
+  $('#btn-help').addEventListener('click', () => modal.open());
 }
 
 async function init() {
@@ -218,19 +211,15 @@ async function init() {
     runtime.toggle();
     syncUI();
   });
-  $('#pause-button').addEventListener('click', () => {
-    if (!runtime) return;
-    runtime.pause();
-    syncUI();
-  });
   $('#reset-button').addEventListener('click', () => {
     if (!runtime) return;
     runtime.reset();
+    renderer.resetView(runtime.getState());
     syncUI();
   });
   $('#center-view-button').addEventListener('click', () => {
     if (!runtime) return;
-    renderer.centerOnObject(runtime.getState());
+    renderer.fitObjects(runtime.getState());
     syncUI();
   });
   await initialiseHelp();
@@ -245,7 +234,7 @@ async function init() {
       await loadScene(event.target.value);
     } catch (error) {
       console.error(error);
-      showEmptyState('Experiment could not load', error.message, 'Configuration error');
+      showEmptyState('Experiment could not load', error.message);
     }
   });
 
@@ -267,5 +256,5 @@ async function init() {
 
 init().catch((error) => {
   console.error(error);
-  showEmptyState('Physics Lab configuration error', error.message, 'Configuration error');
+  showEmptyState('Physics Lab configuration error', error.message);
 });

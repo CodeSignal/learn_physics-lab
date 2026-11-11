@@ -63,10 +63,34 @@ export class CanvasRenderer {
     return Math.min(this.canvas.clientWidth / (bounds.right - bounds.left), this.canvas.clientHeight / (bounds.top - bounds.bottom));
   }
 
-  centerOnObject(state) {
-    const target = Object.values(state.objects).find((object) => object.bodyType === 'dynamic');
-    if (!target) return;
-    this.view = { centerX: target.x, centerY: target.y, scale: this.starterScale(state.bounds) };
+  fitObjects(state) {
+    const objects = Object.values(state.objects);
+    if (!objects.length) {
+      this.resetView(state);
+      return;
+    }
+    const frame = objects.reduce((bounds, object) => {
+      const rotation = object.rotation || 0;
+      const width = object.shape === 'circle' ? object.radius * 2 : object.width;
+      const height = object.shape === 'circle' ? object.radius * 2 : object.height;
+      const halfWidth = (Math.abs(Math.cos(rotation)) * width + Math.abs(Math.sin(rotation)) * height) / 2;
+      const halfHeight = (Math.abs(Math.sin(rotation)) * width + Math.abs(Math.cos(rotation)) * height) / 2;
+      return {
+        left: Math.min(bounds.left, object.x - halfWidth),
+        right: Math.max(bounds.right, object.x + halfWidth),
+        bottom: Math.min(bounds.bottom, object.y - halfHeight),
+        top: Math.max(bounds.top, object.y + halfHeight),
+      };
+    }, { left: Infinity, right: -Infinity, bottom: Infinity, top: -Infinity });
+    const width = Math.max(frame.right - frame.left, 0.01);
+    const height = Math.max(frame.top - frame.bottom, 0.01);
+    const scale = Math.min(this.canvas.clientWidth / (width * 1.15), this.canvas.clientHeight / (height * 1.15));
+    this.view = { centerX: (frame.left + frame.right) / 2, centerY: (frame.bottom + frame.top) / 2, scale };
+  }
+
+  resetView(state) {
+    const { left, right, bottom, top } = state.bounds;
+    this.view = { centerX: (left + right) / 2, centerY: (bottom + top) / 2, scale: this.starterScale(state.bounds) };
   }
 
   drawCoordinateSystem(state, visible, point, width, height) {
