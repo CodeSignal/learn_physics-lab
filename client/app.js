@@ -160,12 +160,11 @@ function syncUI() {
   graphs.update(runtime);
   $('#time-display').textContent = `${fmt(state.time)} s`;
   const running = state.status === 'running';
-  $('#pause-button').disabled = !running;
-  $('#run-button').textContent = state.status === 'paused' ? 'Resume' : state.status === 'complete' ? 'Run again' : 'Run simulation';
+  $('#run-button').textContent = running ? 'Pause' : state.status === 'paused' ? 'Resume' : state.status === 'complete' ? 'Run again' : 'Run';
 }
 
 function setControlsDisabled(disabled) {
-  ['run-button', 'pause-button', 'reset-button', 'center-view-button'].forEach((id) => { $(`#${id}`).disabled = disabled; });
+  ['run-button', 'reset-button', 'center-view-button'].forEach((id) => { $(`#${id}`).disabled = disabled; });
 }
 
 function showEmptyState(title, description) {
@@ -210,11 +209,6 @@ async function init() {
   $('#run-button').addEventListener('click', () => {
     if (!runtime) return;
     runtime.toggle();
-    syncUI();
-  });
-  $('#pause-button').addEventListener('click', () => {
-    if (!runtime) return;
-    runtime.pause();
     syncUI();
   });
   $('#reset-button').addEventListener('click', () => {
