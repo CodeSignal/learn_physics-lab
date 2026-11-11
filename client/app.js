@@ -159,8 +159,6 @@ function syncUI() {
   graphs.update(runtime);
   $('#time-display').textContent = `${fmt(state.time)} s`;
   const running = state.status === 'running';
-  $('#status-label').textContent = running ? 'Running' : state.status === 'paused' ? 'Paused' : state.status === 'complete' ? 'Complete' : 'Ready';
-  $('#status-pill').classList.toggle('running', running);
   $('#pause-button').disabled = !running;
   $('#run-button').textContent = state.status === 'paused' ? 'Resume' : state.status === 'complete' ? 'Run again' : 'Run simulation';
 }
@@ -169,14 +167,13 @@ function setControlsDisabled(disabled) {
   ['run-button', 'pause-button', 'reset-button', 'center-view-button'].forEach((id) => { $(`#${id}`).disabled = disabled; });
 }
 
-function showEmptyState(title, description, status = 'Not configured') {
+function showEmptyState(title, description) {
   $('#scene-title').textContent = title;
   $('#empty-state-message').textContent = description;
   $('#parameter-controls').replaceChildren();
   $('#empty-state').hidden = false;
   $('#simulation-canvas').hidden = true;
   $('#lower-panels').hidden = true;
-  $('#status-label').textContent = status;
   $('#time-display').textContent = '—';
   setControlsDisabled(true);
 }
@@ -245,7 +242,7 @@ async function init() {
       await loadScene(event.target.value);
     } catch (error) {
       console.error(error);
-      showEmptyState('Experiment could not load', error.message, 'Configuration error');
+      showEmptyState('Experiment could not load', error.message);
     }
   });
 
@@ -267,5 +264,5 @@ async function init() {
 
 init().catch((error) => {
   console.error(error);
-  showEmptyState('Physics Lab configuration error', error.message, 'Configuration error');
+  showEmptyState('Physics Lab configuration error', error.message);
 });
