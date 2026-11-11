@@ -2,3 +2,8 @@
 .simulation-card canvas[hidden],.lower-grid[hidden],.empty-state[hidden]{display:none!important}.empty-state{position:absolute;inset:0;display:grid;place-content:center;margin:auto;padding:24px;text-align:center;background:var(--Colors-Backgrounds-Main-Top);color:var(--Colors-Text-Body-Default)}.empty-state h2{margin:0;color:var(--Colors-Text-Body-Strongest);font-size:20px}.empty-state p{max-width:440px;margin:10px 0 0;line-height:1.55}.empty-state code{font-family:monospace;font-size:.9em;color:var(--Colors-Text-Body-Strongest)}
 .parameter-status{color:var(--Colors-Text-Body-Default);font-size:10px;font-weight:600;line-height:1.2;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;pointer-events:none}
 .help-modal-header{box-sizing:border-box;height:88px;padding:0 var(--UI-Spacing-spacing-mxl);align-items:center}
+.transport .button-text{align-items:center}
+#run-button{width:102px}
+#run-button.is-pause-action{background:var(--Colors-Base-Primary-900);color:var(--Colors-Base-Neutral-00)}
+#run-button.is-pause-action:hover{background:var(--Colors-Base-Primary-950)}
+#run-button.is-pause-action:active{background:var(--Colors-Base-Primary-1000)}

@@ -17,6 +17,7 @@ let measurementNodes = [];
 
 const fmt = (value) => Number(value).toFixed(2);
 const formatControlValue = (value, step) => Number(value.toFixed((`${step}`.split('.')[1] || '').length)).toString();
+const snapControlValue = (control, value) => control.min + Math.round((value - control.min) / control.step) * control.step;
 
 async function fetchJson(path, label) {
   let response;
@@ -91,9 +92,15 @@ function renderControls(scene) {
     const output = item.querySelector('output');
     const editor = item.querySelector('.parameter-value-input');
     const closeEditor = () => { editor.hidden = true; output.hidden = false; };
+    const applyParameter = (value) => {
+      const valid = Number.isFinite(value) && value >= control.min && value <= control.max;
+      const nextValue = valid ? snapControlValue(control, value) : null;
+      if (valid && Math.abs(nextValue - runtime.parameters.get(control.id)) > 1e-9) graphs.archiveRun(runtime);
+      return runtime.setParameter(control.id, value);
+    };
     const commit = () => {
       const value = Number(editor.value.trim());
-      if (runtime.setParameter(control.id, value)) {
+      if (applyParameter(value)) {
         const applied = formatControlValue(runtime.parameters.get(control.id), control.step);
         range.value = applied;
         editor.value = applied;
@@ -107,7 +114,7 @@ function renderControls(scene) {
     const edit = () => { output.hidden = true; editor.hidden = false; editor.focus(); editor.select(); };
 
     range.addEventListener('input', () => {
-      runtime.setParameter(control.id, Number(range.value));
+      applyParameter(Number(range.value));
       const applied = formatControlValue(runtime.parameters.get(control.id), control.step);
       editor.value = applied;
       output.textContent = applied;
@@ -158,9 +165,12 @@ function syncUI() {
   renderer.render(state);
   renderMeasurements();
   graphs.update(runtime);
+  $('#clear-comparisons-button').hidden = !graphs.hasComparisons();
   $('#time-display').textContent = `${fmt(state.time)} s`;
   const running = state.status === 'running';
-  $('#run-button').textContent = running ? 'Pause' : state.status === 'paused' ? 'Resume' : state.status === 'complete' ? 'Run again' : 'Run';
+  const runButton = $('#run-button');
+  runButton.textContent = running ? 'Pause' : state.status === 'paused' ? 'Resume' : state.status === 'complete' ? 'Run again' : 'Run';
+  runButton.classList.toggle('is-pause-action', running);
 }
 
 function setControlsDisabled(disabled) {
@@ -190,7 +200,7 @@ async function loadScene(id) {
   renderControls(activeScene);
   buildMeasurements();
   const graph = activeScene.instrumentation?.graph;
-  graphs.load(graph, runtime);
+  graphs.load(graph, runtime, { comparisonsEnabled: activeScene.learnerControls.length > 0, controls: activeScene.learnerControls });
   $('#graphs-panel').hidden = !graph;
   $('#graph-title').textContent = graph?.title || 'Measurement graph';
   $('#scene-title').textContent = activeScene.title.replace(/^\d+ · /, '');
@@ -220,6 +230,10 @@ async function init() {
   $('#center-view-button').addEventListener('click', () => {
     if (!runtime) return;
     renderer.fitObjects(runtime.getState());
+    syncUI();
+  });
+  $('#clear-comparisons-button').addEventListener('click', () => {
+    graphs.clearComparisons();
     syncUI();
   });
   await initialiseHelp();
