@@ -43,8 +43,9 @@ physics-lab development.
 - Click a displayed slider value to type an exact number; press Enter or click
   away to apply it.
 - Run, pause, reset, or run again after a simulation completes.
-- Pan the canvas and zoom with a mouse wheel or trackpad pinch gesture.
-- Use **Center view** to fit every scene object on screen.
+- Pan the canvas and zoom with a mouse wheel, trackpad pinch gesture, or the
+  on-canvas zoom controls.
+- Use **Center view** to restore the experiment's initial framing.
 - Observe dotted, translucent motion trails, force/velocity vectors, live
   measurement values, and the experiment's configured chart.
 - After changing a parameter, compare the saved graph traces, or select

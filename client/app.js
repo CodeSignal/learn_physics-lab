@@ -171,6 +171,7 @@ function syncUI() {
   graphs.update(runtime);
   $('#clear-comparisons-button').hidden = !graphs.hasComparisons();
   $('#time-display').textContent = `${fmt(state.time)} s`;
+  $('#zoom-level').textContent = `${renderer.getZoomPercent()}%`;
   const running = state.status === 'running';
   const runButton = $('#run-button');
   runButton.textContent = running ? 'Pause' : state.status === 'paused' ? 'Resume' : state.status === 'complete' ? 'Run again' : 'Run';
@@ -178,7 +179,7 @@ function syncUI() {
 }
 
 function setControlsDisabled(disabled) {
-  ['run-button', 'reset-button', 'center-view-button'].forEach((id) => { $(`#${id}`).disabled = disabled; });
+  ['run-button', 'reset-button', 'zoom-out-button', 'zoom-in-button', 'center-view-button'].forEach((id) => { $(`#${id}`).disabled = disabled; });
 }
 
 function showEmptyState(title, description) {
@@ -189,6 +190,7 @@ function showEmptyState(title, description) {
   $('#no-parameters-message').hidden = true;
   $('#empty-state').hidden = false;
   $('#simulation-canvas').hidden = true;
+  $('#view-controls').hidden = true;
   $('#lower-panels').hidden = true;
   $('#time-display').textContent = '—';
   setControlsDisabled(true);
@@ -201,6 +203,7 @@ async function loadScene(id) {
   runtime = await SimulationRuntime.create(activeScene);
   $('#empty-state').hidden = true;
   $('#simulation-canvas').hidden = false;
+  $('#view-controls').hidden = false;
   $('#lower-panels').hidden = false;
   setControlsDisabled(false);
   renderControls(activeScene);
@@ -235,7 +238,15 @@ async function init() {
   });
   $('#center-view-button').addEventListener('click', () => {
     if (!runtime) return;
-    renderer.fitObjects(runtime.getState());
+    renderer.resetView(runtime.getState());
+    syncUI();
+  });
+  $('#zoom-out-button').addEventListener('click', () => {
+    renderer.zoomBy(.8);
+    syncUI();
+  });
+  $('#zoom-in-button').addEventListener('click', () => {
+    renderer.zoomBy(1.25);
     syncUI();
   });
   $('#clear-comparisons-button').addEventListener('click', () => {
