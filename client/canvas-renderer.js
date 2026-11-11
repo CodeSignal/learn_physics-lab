@@ -69,6 +69,11 @@ export class CanvasRenderer {
     this.view = { centerX: target.x, centerY: target.y, scale: this.starterScale(state.bounds) };
   }
 
+  resetView(state) {
+    const { left, right, bottom, top } = state.bounds;
+    this.view = { centerX: (left + right) / 2, centerY: (bottom + top) / 2, scale: this.starterScale(state.bounds) };
+  }
+
   drawCoordinateSystem(state, visible, point, width, height) {
     const config = state.coordinateSystem;
     if (config?.enabled === false) return;

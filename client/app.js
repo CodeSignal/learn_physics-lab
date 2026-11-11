@@ -220,6 +220,7 @@ async function init() {
   $('#reset-button').addEventListener('click', () => {
     if (!runtime) return;
     runtime.reset();
+    renderer.resetView(runtime.getState());
     syncUI();
   });
   $('#center-view-button').addEventListener('click', () => {
