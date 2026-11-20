@@ -79,6 +79,10 @@ Run an extracted release from its root directory, where `package.json` and
 npm run start:prod
 ```
 
+The server respects `PORT` in every mode and defaults to `3000`. Use
+`PORT=3001 npm run start:prod` for split-screen alongside a question activity
+on port `3000`.
+
 The production server serves `dist/` and reads the practice-owned
 `../physics-lab.settings.json` and `../experiments/` files. It never modifies
 those configuration files.

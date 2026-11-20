@@ -26,8 +26,8 @@ if (isProduction && !fs.existsSync(DIST_DIR)) {
   throw new Error(`Production mode enabled but dist directory does not exist: ${DIST_DIR}`);
 }
 
-// Force port 3000 in production, otherwise use PORT environment variable or default to 3000
-const PORT = isProduction ? 3000 : (process.env.PORT || 3000);
+// Respect the configured port in every mode, defaulting to 3000.
+const PORT = process.env.PORT || 3000;
 
 // Track connected WebSocket clients
 const wsClients = new Set();
