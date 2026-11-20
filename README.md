@@ -126,6 +126,10 @@ cd bespoke-simulation
 npm run start:prod
 ```
 
+The server uses `PORT` in both production and development, defaulting to `3000`.
+For split-screen, run `PORT=3001 npm run start:prod` to serve the simulation
+on port `3001` alongside the question activity on port `3000`.
+
 The production server maps `physics-lab.settings.json` and files below
 `experiments/` from the parent directory to `/runtime-config/`. It never
 creates, copies, or edits those files. Set `PHYSICS_LAB_CONFIG_DIR` to use a
