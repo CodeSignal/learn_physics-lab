@@ -7,7 +7,10 @@ import helpContent from './help-content.html?raw';
 import Dropdown from './design-system/components/dropdown/dropdown.js';
 
 const $ = (selector) => document.querySelector(selector);
-const SETTINGS_URL = new URL('/runtime-config/physics-lab.settings.json', window.location.origin);
+const SETTINGS_URL = new URL(
+  './runtime-config/physics-lab.settings.json',
+  window.location.href
+);
 
 let runtime;
 let renderer;
