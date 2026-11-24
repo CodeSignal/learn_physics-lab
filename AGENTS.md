@@ -143,3 +143,5 @@ When working on applications built with this template:
    component classes and usage
 4. **Maintain consistency** with the template's structure and patterns
 5. **Keep guidelines up to date** by editing this AGENTS.md file as the codebase evolves
+6. **Preserve the help header's height** so its title stays vertically centered
+   when modal content needs to scroll.
