@@ -39,6 +39,8 @@ This template provides:
      compiled assets.
    - Use `annotations` and `environment.coordinateSystem` for visual-only scene
      markings. Never model annotations as physics objects.
+   - Resolve runtime settings relative to the current page URL so split-screen
+     mounts such as `/sim/` are preserved; resolve experiment paths from that URL.
 
 ## Key Conventions
 
